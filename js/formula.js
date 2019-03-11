@@ -77,6 +77,10 @@ function plot_data(evt) {
         title: {
             text: 'Rendimenti'
         },
+        yAxis: {
+            max: 3,
+            min: 0
+        },
         series: series
     });
     return false;
