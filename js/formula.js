@@ -24,7 +24,7 @@ MAX_C = 7
 function max(start) {
     return MAX_A + MAX_B / ((start / MAX_C) + 1);
 }
-MID_A = 20
+MID_A = 30
 MID_B = 500
 MID_M = 25000
 function mid(start) {
@@ -33,7 +33,7 @@ function mid(start) {
     return linear_interpolate(start, 0, MID_M, sig_mp_0, sig_mp_1);
 }
 STEEP_A = 0.05
-STEEP_C = 100
+STEEP_C = 400
 function stp(start) {
     return STEEP_A / ((start / STEEP_C) + 1);
 }
