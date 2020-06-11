@@ -18,23 +18,23 @@ function gain(start, end) {
         return end - start;
     }
 }
-MAX_A = 1.2;
-MAX_B = 1.7;
-MAX_C = 30;
-MAX_SCORE = 200;
+MAX_A = 0;
+MAX_B = 0;
+MAX_C = 0;
+MAX_SCORE = 0;
 function max(start) {
     return MAX_A + MAX_B / ((start / MAX_C) + 1);
 }
-MID_A = 30;
-MID_B = 500;
-MID_M = 25000;
+MID_A = 0;
+MID_B = 0;
+MID_M = 0;
 function mid(start) {
     let sig_mp_0 = MID_A;
     let sig_mp_1 = MID_B;
     return linear_interpolate(start, 0, MID_M, sig_mp_0, sig_mp_1);
 }
-STEEP_A = 0.05;
-STEEP_C = 400;
+STEEP_A = 0;
+STEEP_C = 0;
 function stp(start) {
     return STEEP_A / ((start / STEEP_C) + 1);
 }
@@ -56,7 +56,8 @@ function update_params() {
 function plot_data(evt) {
     if (evt) {
         evt.preventDefault();
-    }    update_params();
+    }
+    update_params();
     //var  = [...Array(5).keys()];
     const startings = [1, 5, 10, 20, 50];
     let series = [];
