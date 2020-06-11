@@ -47,7 +47,7 @@ function update_params() {
     window.MAX_B = parseFloat(document.getElementsByName('max_b')[0].value);
     window.MAX_C = parseFloat(document.getElementsByName('max_c')[0].value);
     window.MID_A = parseFloat(document.getElementsByName('mid_a')[0].value);
-    window.MID_B = parseFloat(document.getElementsByName('mid_a')[0].value);
+    window.MID_B = parseFloat(document.getElementsByName('mid_b')[0].value);
     window.MID_M = parseFloat(document.getElementsByName('mid_m')[0].value);
     window.STEEP_A = parseFloat(document.getElementsByName('steep_a')[0].value);
     window.STEEP_C = parseFloat(document.getElementsByName('steep_b')[0].value);
