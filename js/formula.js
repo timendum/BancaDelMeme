@@ -21,7 +21,7 @@ function gain(start, end) {
 MAX_A = 0;
 MAX_B = 0;
 MAX_C = 0;
-MAX_SCORE = 0;
+MAX_SCORE = 400;
 function max(start) {
     return MAX_A + MAX_B / ((start / MAX_C) + 1);
 }
