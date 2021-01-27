@@ -62,6 +62,8 @@ def main():
             if not c.fetchone():
                 link = 'https://reddit.com{id}'.format(id=submission.permalink)
                 title = html.escape(submission.title or '')
+                if len(title) <= 3:
+                    title = "Titolo: " + title
                 message_template = '<a href=\'{}\'>{}</a>'.format(link, title)
                 logging.info('Posting %s', link)
                 tbot.sendMessage(
