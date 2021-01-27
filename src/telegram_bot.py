@@ -3,10 +3,8 @@
 import html
 import json
 import logging
-import sqlite3
-from datetime import datetime
-from time import sleep
 import os
+import sqlite3
 
 import praw
 import telegram
@@ -21,18 +19,17 @@ logging.basicConfig(level=logging.INFO)
 # Read the file with latest submissions
 def main():
     logging.info("Starting main")
-    with open(os.path.join('..', 'cfg-tlgrm.json'), 'r', encoding='utf-8') as config_file:
+    with open(os.path.join("..", "cfg-tlgrm.json"), "r", encoding="utf-8") as config_file:
         config_data = json.load(config_file)
-        TOKEN = config_data['TOKEN']
-        SUBREDDIT = config_data['SUBREDDIT']
-        CHANNEL = config_data['CHANNEL']
-        DBFILE = config_data['DBFILE']
+        TOKEN = config_data["TOKEN"]
+        SUBREDDIT = config_data["SUBREDDIT"]
+        CHANNEL = config_data["CHANNEL"]
+        DBFILE = config_data["DBFILE"]
 
     logging.info("Setting up Reddit connection")
     reddit = praw.Reddit(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        user_agent=config.USER_AGENT)
+        client_id=config.CLIENT_ID, client_secret=config.CLIENT_SECRET, user_agent=config.USER_AGENT
+    )
     reddit.read_only = True
     # We will test our reddit connection here
     if not utils.test_reddit_connection(reddit):
@@ -43,7 +40,7 @@ def main():
 
     logging.info("Setting up database")
     conn = sqlite3.connect(DBFILE)
-    conn.execute('CREATE TABLE IF NOT EXISTS posts (id)')
+    conn.execute("CREATE TABLE IF NOT EXISTS posts (id)")
     conn.commit()
 
     logging.info("Setting up Telegram connection")
@@ -58,23 +55,25 @@ def main():
     for submission in subreddit.stream.submissions(pause_after=6):
         if submission:
             c = conn.cursor()
-            c.execute('SELECT * FROM posts WHERE id=?', (submission.id, ))
+            c.execute("SELECT * FROM posts WHERE id=?", (submission.id,))
             if not c.fetchone():
-                link = 'https://reddit.com{id}'.format(id=submission.permalink)
-                title = html.escape(submission.title or '')
+                link = "https://reddit.com{id}".format(id=submission.permalink)
+                title = html.escape(submission.title or "")
                 if len(title) <= 3:
                     title = "Titolo: " + title
-                message_template = '<a href=\'{}\'>{}</a>'.format(link, title)
-                logging.info('Posting %s', link)
+                message_template = "<a href='{}'>{}</a>".format(link, title)
+                logging.info("Posting %s", link)
                 tbot.sendMessage(
-                    chat_id=CHANNEL, parse_mode=telegram.ParseMode.HTML, text=message_template)
-                conn.execute('INSERT INTO posts (id) values (?)', (submission.id, ))
+                    chat_id=CHANNEL, parse_mode=telegram.ParseMode.HTML, text=message_template
+                )
+                conn.execute("INSERT INTO posts (id) values (?)", (submission.id,))
                 conn.commit()
             c.close()
         if killhandler.killed:
             logging.info("Termination signal received - exiting")
             break
     conn.close()
+
 
 if __name__ == "__main__":
     utils.keep_up(main)
