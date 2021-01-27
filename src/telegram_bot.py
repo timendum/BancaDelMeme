@@ -60,7 +60,7 @@ def main():
             c = conn.cursor()
             c.execute('SELECT * FROM posts WHERE id=?', (submission.id, ))
             if not c.fetchone():
-                link = 'https://redd.it/{id}'.format(id=submission.id)
+                link = 'https://reddit.com{id}'.format(id=submission.permalink)
                 title = html.escape(submission.title or '')
                 message_template = '<a href=\'{}\'>{}</a>'.format(link, title)
                 logging.info('Posting %s', link)
