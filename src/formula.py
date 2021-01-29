@@ -61,7 +61,7 @@ def sigmoid_max(old):
     return MAX_A + MAX_B / ((old / MAX_C) + 1)
 
 
-MID_A = 30
+MID_A = 70
 MID_B = 5000
 MID_M = 25000
 
