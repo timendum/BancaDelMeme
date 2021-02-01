@@ -1,5 +1,8 @@
-#!/bin/bash
-cd /home/ambrogio/bancaDelMeme
+#!/usr/bin/env bash
+set -Eeuo pipefail
+script_dir=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+cd $script_dir
+
 DBDIR=./db/
 BACKUP_DIR=./db/backup
 mkdir -p BACKUP_DIR
