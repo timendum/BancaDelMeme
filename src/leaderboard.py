@@ -131,6 +131,7 @@ def main():
                 if isinstance(widget, praw.models.TextArea):
                     if widget.shortName.lower() == "migliori autori":
                         widget.mod.update(text=top_poster_text)
+                        logging.info("Updated redesign: %s", subreddit)
                         break
 
     # Sidebar update
@@ -139,6 +140,7 @@ def main():
     if not config.TEST:
         for subreddit in config.SUBREDDITS:
             reddit.subreddit(subreddit).mod.update(description=sidebar_text)
+            logging.info("Updated old: %s", subreddit)
 
     sess.commit()
 
