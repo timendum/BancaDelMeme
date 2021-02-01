@@ -79,7 +79,8 @@ def main():
         wikipage = reddit.subreddit("BancaDelMeme").wiki["leaderboardbig"]
         wikipage.edit(wiki_lead_text)
 
-    top_poster = sess.execute("""
+    top_poster = sess.execute(
+        """
     SELECT  name,
             SUM(oc) AS coc,
             SUM(CASE OC WHEN 1 THEN final_upvotes ELSE 0 END) AS soc,
