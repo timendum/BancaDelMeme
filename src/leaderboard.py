@@ -12,39 +12,52 @@ from utils import formatNumber
 
 logging.basicConfig(level=logging.INFO)
 localtime = time.strftime("{%Y-%m-%d %H:%M:%S}")
-sidebar_text_org = """
-/r/BancaDelMeme è un posto dove si puoi comprare, vendere, condividere, fare e investire sui meme liberamente.
 
-*****
-
-**Migliori utenti:**
+wiki_lead_text_org = """
+#Migliori utenti:
 
 %TOP_USERS%  
 
+Ultimo aggiornamento: %LOCALTIME%
+"""
 
-**Migliori autori di OC:**
+wiki_oc_text_org = """
+#Migliori autori:
 
 %TOP_OC%  
 
 Ultimo aggiornamento: %LOCALTIME%
-
-
-
-^(Questo sub non è ***solo*** per templates. È rivolto a tutti i meme (in italiano), il tutto arricchito con un po' di sano gioco dei mercati)
-
-###***[Inviaci dei suggerimenti!](https://www.reddit.com/message/compose?to=%2Fr%2FBancaDelMeme)***
-
-&nbsp;
-
-***
-
-**Subreddit ai quali potresti essere interessato:**
-
-/r/italy
-
-***
-***
 """
+
+
+def format_investor(users, limit=1000) -> str:
+    text = ".|Utente|Patrimonio\n"
+    text += ":-:|:-:|:-:\n"
+    for i, user in enumerate(users):
+        text += f"{i + 1}|/u/{user.name}|{formatNumber(user.networth)} M€\n"
+        if i + 1 >= limit:
+            break
+    return text
+
+
+def format_posters_small(users, limit=500) -> str:
+    text = ".|Autore|#OC|Karma|\n"
+    text += ":-:|:-:|:-:|:-:\n"
+    for i, user in enumerate(users):
+        text += f"{i + 1}|/u/{user[0]}|{user[1]}|{user[2]}\n"
+        if i + 1 >= limit:
+            break
+    return text
+
+
+def format_posters_full(users, limit=500) -> str:
+    text = "Autore|#OC|Karma OC|Post totali|Karma totali\n"
+    text += ":-:|:-:|:-:|:-:|:-:\n"
+    for i, user in enumerate(users):
+        text += f"{i + 1}|/u/{user[0]}|{user[1]}|{user[2]:,d}|{user[3]}|{user[4]:,d}\n"
+        if i + 1 >= limit:
+            break
+    return text
 
 
 def main():
@@ -67,6 +80,7 @@ def main():
 
     sess = session_maker()
 
+    # query
     top_users = (
         sess.query(
             Investor.name,
@@ -77,72 +91,94 @@ def main():
         .outerjoin(Investment, and_(Investor.name == Investment.name, Investment.done == 0))
         .group_by(Investor.name)
         .order_by(desc("networth"))
-        .limit(10)
+        .limit(500)
         .all()
     )
-
-    top_users_text = ".|Utente|Patrimonio\n"
-    top_users_text += ":-:|:-:|:-:\n"
-    for i, user in enumerate(top_users):
-        top_users_text += f"{i + 1}|/u/{user.name}|{formatNumber(user.networth)} M€\n"
-
-    top_users_text += """
-
-[Classifica completa](/r/BancaDelMeme/wiki/leaderboardbig)"""
-
-    sidebar_text = sidebar_text_org.replace("%TOP_USERS%", top_users_text).replace(
-        "%LOCALTIME%", localtime
-    )
-
-    # redesign
-    if not config.TEST:
-        for subreddit in config.SUBREDDITS:
-            for widget in reddit.subreddit(subreddit).widgets.sidebar:
-                if isinstance(widget, praw.models.TextArea):
-                    if widget.shortName.lower().replace(" ", "") == "top10":
-                        widget.mod.update(text=top_users_text)
-                        break
-
     top_poster = sess.execute(
         """
     SELECT  name,
             SUM(oc) AS coc,
             SUM(CASE OC WHEN 1 THEN final_upvotes ELSE 0 END) AS soc
     FROM "Buyables"
-    WHERE done = 1 AND time > :since
+    WHERE done = 1
     GROUP BY name
     ORDER BY coc DESC, soc DESC
     LIMIT :limit""",
-        {"since": 1579020536, "limit": 5},
+        {"limit": 100},
     )
 
-    top_poster_text = "Autore|#OC|Karma|\n"
-    top_poster_text += ":-:|:-:|:-:|:-:|:-:\n"
-    for poster in top_poster:
-        top_poster_text += f"/u/{poster[0]}|{poster[1]}|{poster[2]}\n"
-    top_poster_text += """
+    # Sidebar
+    sidebar_text = f"""
+/r/BancaDelMeme è un posto dove si puoi comprare, vendere,
+condividere, fare e investire sui meme liberamente.
 
-[Classifica completa](/r/BancaDelMeme/wiki/leaderboardocbig)"""
-    sidebar_text = sidebar_text.replace("%TOP_OC%", top_poster_text)
+*****
+
+**Migliori utenti:**
+
+{format_investor(top_users, 10)}
+
+[Classifica completa](/r/BancaDelMeme/wiki/leaderboardbig)
+
+
+**Migliori autori di OC:**
+
+{format_posters_small(top_poster, 3)}
+
+[Classifica completa](/r/BancaDelMeme/wiki/leaderboardocbig)
+
+Ultimo aggiornamento: {localtime}
+
+
+###***[Inviaci dei suggerimenti!](https://www.reddit.com/message/compose?to=%2Fr%2FBancaDelMeme)***
+
+&nbsp;
+
+***
+
+**Subreddit ai quali potresti essere interessato:**
+
+/r/italy
+
+***
+***
+"""
+
+    # redesign
     if not config.TEST:
-        # redesign
         for subreddit in config.SUBREDDITS:
+            # poster
+            for widget in reddit.subreddit(subreddit).widgets.sidebar:
+                if isinstance(widget, praw.models.TextArea):
+                    if widget.shortName.lower().replace(" ", "") == "top10":
+                        widget.mod.update(text=format_investor(top_users, 10))
+                        logging.info(" -- Updated redesign top10: %s", subreddit)
+                        break
+            # investor
             for widget in reddit.subreddit(subreddit).widgets.sidebar:
                 if isinstance(widget, praw.models.TextArea):
                     if widget.shortName.lower() == "migliori autori":
-                        widget.mod.update(text=top_poster_text)
-                        logging.info("Updated redesign: %s", subreddit)
+                        widget.mod.update(text=format_posters_small(top_poster, 4))
+                        logging.info(" -- Updated redesign migliori autori: %s", subreddit)
                         break
 
-    # Sidebar update
+    # Old and wiki
     logging.info(" -- Updating sidebar text to:")
-    logging.info(sidebar_text)
+    logging.info(sidebar_text.replace("\n", "\\n"))
     if not config.TEST:
         for subreddit in config.SUBREDDITS:
-            reddit.subreddit(subreddit).mod.update(description=sidebar_text)
-            logging.info("Updated old: %s", subreddit)
-
-    sess.commit()
+            sub = reddit.subreddit(subreddit)
+            # Sidebar update
+            sub.mod.update(description=sidebar_text)
+            logging.info("Updated sidebar: %s", subreddit)
+            # wiki full poster
+            wikipage = sub.wiki["leaderboardocbig"]
+            wikipage.edit(format_posters_full(top_poster, 100))
+            logging.info("Updated wiki poster: %s", subreddit)
+            # wiki full investor
+            wikipage = sub.wiki["leaderboardbig"]
+            wikipage.edit(format_investor(top_poster, 500))
+            logging.info("Updated wiki investor: %s", subreddit)
 
     # Report the Reddit API call stats
     rem = int(reddit.auth.limits["remaining"])
