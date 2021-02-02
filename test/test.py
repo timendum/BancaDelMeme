@@ -21,6 +21,8 @@ class Test(unittest.TestCase):
         sess = self.Session()
         sess.query(Investment).delete()
         sess.query(Investor).delete()
+        self.comments = []
+        self.submissions = []
 
         self.worker = CommentWorker(session_maker)
 
@@ -33,9 +35,12 @@ class Test(unittest.TestCase):
 
     def command(self, command, username='testuser', post='testpost', lcomment=None, lpost=None):
         submission = Submission(post)
+        self.submissions.append(submission)
         if lpost:
             lpost(submission)
         comment = Comment(post + '/id', username, command, submission)
+        submission.replies.append(comment)
+        self.comments.append(comment)
         if lcomment:
             lcomment(comment)
         self.worker(comment)

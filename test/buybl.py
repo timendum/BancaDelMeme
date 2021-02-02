@@ -106,7 +106,7 @@ class BuyableTest(unittest.TestCase):
 
     def test_deleted(self):
         investor, _, submission = self.create_investment(100, iid='3')
-        submission.deleted = True
+        submission.removed = True
         investor = Investor(name=submission.author.name)
         sess = self.session
         sess.add(investor)

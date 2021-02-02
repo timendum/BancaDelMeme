@@ -862,3 +862,10 @@ Hai cosi raggiunto il saldo massimo! Hai trionfato in questa sanguinosa competiz
 
 def cmd_sconosciuto():
     return """Non conosco il comando che mi hai inviato, il tuo messaggio è stato ignorato."""
+
+
+def rimozione(rule) -> str:
+    return f"""Il tuo post è stato rimosso
+perche' non rispetta la regola {rule}.
+
+Controlla [le regole](/r/BancaDelMeme/about/rules/), sono poche ma importanti."""

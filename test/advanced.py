@@ -80,3 +80,10 @@ class TestAdvanced(Test):
         replies = self.command('!investitutto', post='testpost2')
         self.assertEqual(len(replies), 1)
         self.assertEqual(replies[0].body, message.modify_min_invest(0))
+
+    def test_rimuovi(self):
+        replies = self.command('!rimuovi 1')
+        self.assertEqual(len(replies), 1)
+        self.assertEqual(replies[0].body, message.cmd_sconosciuto())
+        replies = self.command('!rimuovi 1', config.ADMIN_ACCOUNTS[0])
+        self.assertEqual(len(replies), 0)

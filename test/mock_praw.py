@@ -17,9 +17,13 @@ class Submission:
         self.ups = ups
         self.replies = []
         self.stickied = False
+        self.distinguished = False
         self.created_utc = int(time.time())
         self.link_flair_text = ""
         self.removed = False
+        self.permalink = f"r/a/{submission_id}/"
+        self.title = f"Submission {submission_id}"
+        self.mod = MagicMock()
 
     def __str__(self):
         return self.id
