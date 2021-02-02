@@ -12,7 +12,8 @@ import submitter
 import message
 from models import Investor, Investment
 import mock_praw
-from unittest.mock import Mock, MagicMock
+import mock_telegram
+from unittest.mock import Mock
 
 class SubmitterTest(unittest.TestCase):
     def setUp(self):
@@ -27,6 +28,7 @@ class SubmitterTest(unittest.TestCase):
         #self.submitter.time.sleep = sleep_func()
         self.reddit = mock_praw.Reddit()
         self.submitter.praw.Reddit = Mock(return_value=self.reddit)
+        self.submitter.telegram = mock_telegram
         self.submitter.create_engine = Mock(return_value=engine)
         subm_conn = sqlite3.connect(config.POST_DBFILE)
         subm_conn.execute("DROP TABLE IF EXISTS posts")

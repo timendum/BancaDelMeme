@@ -21,5 +21,8 @@
     "BOT_USERNAME": "BotUsername",
     "BOT_PASSWORD": "BotPassword",
     "TEST": 1,
-    "DBFILE": "testdb.sqlite3"
+    "DBFILE": "testdb.sqlite3",
+    "TG_TOKEN": "12:546",
+    "TG_CHANNEL": "@TelegramTest",
+    "POST_DBFILE": "tgtestdb.sqlite3"
 }
