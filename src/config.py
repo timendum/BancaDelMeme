@@ -37,4 +37,9 @@ DBFILE = config_data['DBFILE']
 
 TEST = int(config_data['TEST'])
 
+TG_TOKEN = config_data['TG_TOKEN']
+TG_CHANNEL = config_data['TG_CHANNEL']
+
+POST_DBFILE = config_data["POST_DBFILE"]
+
 DB = "sqlite:///{db}".format(db=DBFILE)
