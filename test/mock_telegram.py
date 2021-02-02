@@ -1,6 +1,7 @@
 """mocks for Telegram"""
 
-from unittest.mock import MagicMock
+import telegram as _telegram
+
 
 class Bot:
     def __init__(self, token, **_):
@@ -12,5 +13,6 @@ class Bot:
     def sendMessage(self, chat_id, text, parse_mode=None, **_):
         self.posts.append(text)
 
-error = MagicMock(TelegramError=MagicMock())
-ParseMode = MagicMock(HTML=MagicMock())
+
+error = _telegram.error
+ParseMode = _telegram.ParseMode
