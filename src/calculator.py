@@ -11,7 +11,7 @@ import formula
 import message
 import utils
 from kill_handler import KillHandler
-from models import Firm, Investment, Investor
+from models import Investment, Investor
 from stopwatch import Stopwatch
 from utils import BALANCE_CAP, EmptyResponse, edit_wrap
 
@@ -29,11 +29,13 @@ def main():
     engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
     session_maker = sessionmaker(bind=engine)
 
-    reddit = praw.Reddit(client_id=config.CLIENT_ID,
-                         client_secret=config.CLIENT_SECRET,
-                         username=config.USERNAME,
-                         password=config.PASSWORD,
-                         user_agent=config.USER_AGENT)
+    reddit = praw.Reddit(
+        client_id=config.CLIENT_ID,
+        client_secret=config.CLIENT_SECRET,
+        username=config.USERNAME,
+        password=config.PASSWORD,
+        user_agent=config.USER_AGENT,
+    )
 
     # We will test our reddit connection here
     if not utils.test_reddit_connection(reddit):
@@ -49,11 +51,13 @@ def main():
         sess = session_maker()
 
         then = int(time.time()) - config.INVESTMENT_DURATION
-        investment = sess.query(Investment).\
-            filter(Investment.done == 0).\
-            filter(Investment.time < then).\
-            order_by(Investment.time.asc()).\
-            first()
+        investment = (
+            sess.query(Investment)
+            .filter(Investment.done == 0)
+            .filter(Investment.time < then)
+            .order_by(Investment.time.asc())
+            .first()
+        )
 
         if not investment:
             # Nothing matured yet; wait a bit before trying again
@@ -94,24 +98,10 @@ def main():
         else:
             response = EmptyResponse()
 
-        firm_profit = 0
         if new_balance < BALANCE_CAP:
             # If investor is in a firm and he profits,
             # 15% goes to the firm
-            firm_name = ''
-            if investor.firm != 0 and profit >= 0:
-                firm = sess.query(Firm).\
-                    filter(Firm.id == investor.firm).\
-                    first()
-                firm_name = firm.name
-
-                user_profit = int(profit * ((100 - firm.tax) / 100))
-                investor.balance += user_profit + amount
-
-                firm_profit = int(profit * (firm.tax / 100))
-                firm.balance += firm_profit
-            else:
-                investor.balance = new_balance
+            investor.balance = new_balance
 
             # Edit the bot's response (triggers an API call)
             if profit > 0:
@@ -121,11 +111,15 @@ def main():
             else:
                 logging.info(" -- lost %s", profit)
 
-            edited_response = message.modify_invest_return(investment.amount, investment.upvotes,
-                                                           upvotes_now, change, profit,
-                                                           percent_str, investor.balance)
-            if investor.firm != 0:
-                edited_response += message.modify_firm_tax(firm_profit, firm_name)
+            edited_response = message.modify_invest_return(
+                investment.amount,
+                investment.upvotes,
+                upvotes_now,
+                change,
+                profit,
+                percent_str,
+                investor.balance,
+            )
 
             response.edit_wrap(edited_response)
         else:
@@ -134,19 +128,21 @@ def main():
 
             # Edit the bot's response (triggers an API call)
             logging.info(" -- profited %s but got capped", profit)
-            response.edit_wrap(message.modify_invest_capped(investment.amount, investment.upvotes,
-                                                            upvotes_now, change, profit,
-                                                            percent_str, investor.balance))
+            response.edit_wrap(
+                message.modify_invest_capped(
+                    investment.amount,
+                    investment.upvotes,
+                    upvotes_now,
+                    change,
+                    profit,
+                    percent_str,
+                    investor.balance,
+                )
+            )
 
-        investment.success = (profit > 0)
+        investment.success = profit > 0
         investment.profit = profit
-        if investor.firm != 0:
-            firm = sess.query(Firm).\
-                filter(Firm.id == investor.firm).\
-                first()
-            investment.firm_tax = firm.tax
-        else:
-            investment.firm_tax = 0
+        investment.firm_tax = 0
         investment.done = True
 
         sess.commit()
@@ -156,11 +152,12 @@ def main():
         logging.info(" -- processed in %.2fs", duration)
 
         # Report the Reddit API call stats
-        rem = int(reddit.auth.limits['remaining'])
-        res = int(reddit.auth.limits['reset_timestamp'] - time.time())
+        rem = int(reddit.auth.limits["remaining"])
+        res = int(reddit.auth.limits["reset_timestamp"] - time.time())
         logging.info(" -- API calls remaining: %s, resetting in %.2fs", rem, res)
 
         sess.close()
+
 
 if __name__ == "__main__":
     utils.keep_up(main)
