@@ -13,6 +13,8 @@ def calculate(new, old, net_worth=0):
         old = 0
     if new < 0:
         new = 0
+    if net_worth < 0:
+        net_worth = 1
 
     # Compute gain
     delta = new - old
