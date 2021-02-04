@@ -56,7 +56,6 @@ def main():
         # Retrieve the post
         submission = reddit.submission(id=buyable.post)
         buyable.final_upvotes = submission.ups
-        buyable.oc = (submission.link_flair_text == 'OC')
         if submission.removed or not submission.author:
             logging.info(" -- deleted or removed")
             buyable.done = True
@@ -64,6 +63,8 @@ def main():
             duration = stopwatch.measure()
             logging.info(" -- processed in %.2fs", duration)
             continue
+        # valid OC only if not deleted/removed
+        buyable.oc = (submission.link_flair_text == 'OC')
         if not buyable.oc:
             logging.info(" -- not OC")
             buyable.done = True
