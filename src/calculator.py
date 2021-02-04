@@ -20,8 +20,6 @@ logging.basicConfig(level=logging.INFO)
 # TODO: add docstring
 def main():
     logging.info("Starting calculator...")
-    logging.info("Sleeping for 8 seconds. Waiting for the database to turn on...")
-    time.sleep(8)
 
     killhandler = KillHandler()
 
