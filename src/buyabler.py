@@ -59,6 +59,7 @@ def main():
         if submission.removed or not submission.author:
             logging.info(" -- deleted or removed")
             buyable.done = True
+            sess.delete(buyable)
             sess.commit()
             duration = stopwatch.measure()
             logging.info(" -- processed in %.2fs", duration)
