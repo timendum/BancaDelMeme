@@ -45,6 +45,7 @@ def calculate(new, old, net_worth=0):
         # Return investment amount multiplier (change + 1)
         factor = factor + 1
 
+    factor = max(0, factor)
     return factor
 
 
