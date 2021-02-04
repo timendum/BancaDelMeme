@@ -63,6 +63,14 @@ def main():
             logging.info(" -- processed in %.2fs", duration)
             continue
         # valid OC only if not deleted/removed
+        if submission.stickied or submission.distinguished:
+            logging.info(" -- stickied or distinguished")
+            # buyable.done = True
+            sess.delete(buyable)
+            sess.commit()
+            duration = stopwatch.measure()
+            logging.info(" -- processed in %.2fs", duration)
+            continue
         buyable.oc = (submission.link_flair_text == 'OC')
         if not buyable.oc:
             logging.info(" -- not OC")
