@@ -7,6 +7,7 @@ from unittest.mock import Mock, MagicMock
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
 import buyabler
 import config
@@ -116,8 +117,7 @@ class BuyableTest(unittest.TestCase):
             filter(Investor.name == submission.author.name).\
             one()
         self.assertTrue(investor.balance == config.STARTING_BALANCE)
-        buyable = sess.query(Buyable).\
-            filter(Buyable.post == submission.id).\
-            one()
-        self.assertTrue(buyable.done)
-        self.assertEqual(buyable.profit, 0)
+        with self.assertRaises(NoResultFound): 
+            sess.query(Buyable).\
+                filter(Buyable.post == submission.id).\
+                one()

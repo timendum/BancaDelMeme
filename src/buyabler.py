@@ -58,7 +58,7 @@ def main():
         buyable.final_upvotes = submission.ups
         if submission.removed or not submission.author:
             logging.info(" -- deleted or removed")
-            buyable.done = True
+            # buyable.done = True
             sess.delete(buyable)
             sess.commit()
             duration = stopwatch.measure()
@@ -94,7 +94,7 @@ def main():
             profit += investment.amount / 100
         net_worth = investor.networth(sess)
         if net_worth > 0:
-            profit = min(profit, net_worth)
+            profit = int(min(profit, net_worth))
 
         # Updating the investor's balance
         new_balance = int(balance + profit)
