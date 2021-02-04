@@ -98,7 +98,9 @@ def main():
         """
     SELECT  name,
             SUM(oc) AS coc,
-            SUM(CASE OC WHEN 1 THEN final_upvotes ELSE 0 END) AS soc
+            SUM(CASE OC WHEN 1 THEN final_upvotes ELSE 0 END) AS soc,
+            count(*) as ct,
+            sum(final_upvotes) as st
     FROM "Buyables"
     WHERE done = 1
     GROUP BY name
