@@ -51,7 +51,7 @@ def format_posters_small(users, limit=500) -> str:
 
 
 def format_posters_full(users, limit=500) -> str:
-    text = "Autore|#OC|Karma OC|Post totali|Karma totali\n"
+    text = ".|Autore|#OC|Karma OC|Post totali|Karma totali\n"
     text += ":-:|:-:|:-:|:-:|:-:\n"
     for i, user in enumerate(users):
         text += f"{i + 1}|/u/{user[0]}|{user[1]}|{user[2]:,d}|{user[3]}|{user[4]:,d}\n"
@@ -179,7 +179,7 @@ Ultimo aggiornamento: {localtime}
             logging.info("Updated wiki poster: %s", subreddit)
             # wiki full investor
             wikipage = sub.wiki["leaderboardbig"]
-            wikipage.edit(format_investor(top_poster, 500))
+            wikipage.edit(format_investor(top_users, 500))
             logging.info("Updated wiki investor: %s", subreddit)
 
     # Report the Reddit API call stats
