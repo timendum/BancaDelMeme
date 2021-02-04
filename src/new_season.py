@@ -1,16 +1,11 @@
 # TODO: add docstrin here
-import time
 import logging
 
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, func, desc, and_
-import praw
+
 
 import config
-import utils
-import formula
-import message
+from utils import create_engine
 from models import Investment, Investor, Buyable
 from stopwatch import Stopwatch
 

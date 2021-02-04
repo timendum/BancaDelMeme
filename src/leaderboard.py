@@ -2,13 +2,12 @@ import logging
 import time
 
 import praw
-from sqlalchemy import and_, create_engine, desc, func
+from sqlalchemy import and_, desc, func
 from sqlalchemy.orm import sessionmaker
 
 import config
-import utils
 from models import Investment, Investor
-from utils import formatNumber
+from utils import formatNumber, create_engine, test_reddit_connection
 
 logging.basicConfig(level=logging.INFO)
 localtime = time.strftime("{%Y-%m-%d %H:%M:%S}")
@@ -75,7 +74,7 @@ def main():
     )
 
     # We will test our reddit connection here
-    if not config.TEST and not utils.test_reddit_connection(reddit):
+    if not config.TEST and not test_reddit_connection(reddit):
         exit()
 
     sess = session_maker()

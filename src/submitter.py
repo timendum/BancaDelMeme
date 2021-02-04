@@ -21,12 +21,11 @@ import sqlite3
 
 import praw
 import telegram
-from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 import config
 import message
-import utils
+from utils import create_engine, keep_up, test_reddit_connection
 from comment_worker import reply_wrap
 from kill_handler import KillHandler
 from models import Buyable
@@ -103,7 +102,7 @@ def main():
         exit()
 
     # We will test our reddit connection here
-    if not utils.test_reddit_connection(reddit):
+    if not test_reddit_connection(reddit):
         exit()
 
     logging.info("Starting checking submissions...")
@@ -149,4 +148,4 @@ def main():
 
 
 if __name__ == "__main__":
-    utils.keep_up(main)
+    keep_up(main)

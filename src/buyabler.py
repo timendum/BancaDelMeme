@@ -3,7 +3,6 @@ import logging
 import time
 
 import praw
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import config
@@ -11,18 +10,17 @@ import message
 import utils
 from models import Buyable, Investor, Investment
 from stopwatch import Stopwatch
-from utils import BALANCE_CAP, EmptyResponse, edit_wrap
+from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine
 
 logging.basicConfig(level=logging.INFO)
-
 
 # TODO: rethink how to structure this main
 # TODO: add docstring
 def main():
     logging.info("Starting buyable...")
 
-    engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
-    session_maker = sessionmaker(bind=engine)
+    engine = create_engine()
+    session_maker = sessionmaker(bind=engine, autoflush=False)
 
     reddit = praw.Reddit(client_id=config.CLIENT_ID,
                          client_secret=config.CLIENT_SECRET,

@@ -11,6 +11,7 @@ import logging
 import time
 
 import prawcore
+from sqlalchemy import create_engine as __create_engine
 
 import config
 
@@ -144,3 +145,7 @@ def edit_wrap(self, body):
     else:
         logging.info(body)
         return False
+
+
+def create_engine():
+    return __create_engine(config.DB)

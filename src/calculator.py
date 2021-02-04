@@ -3,7 +3,6 @@ import logging
 import time
 
 import praw
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import config
@@ -13,7 +12,7 @@ import utils
 from kill_handler import KillHandler
 from models import Investment, Investor
 from stopwatch import Stopwatch
-from utils import BALANCE_CAP, EmptyResponse, edit_wrap
+from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine
 
 logging.basicConfig(level=logging.INFO)
 
