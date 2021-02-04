@@ -52,7 +52,7 @@ def format_posters_small(users, limit=500) -> str:
 
 def format_posters_full(users, limit=500) -> str:
     text = ".|Autore|#OC|Karma OC|Post totali|Karma totali\n"
-    text += ":-:|:-:|:-:|:-:|:-:\n"
+    text += ":-:|:-:|:-:|:-:|:-:|:-:\n"
     for i, user in enumerate(users):
         text += f"{i + 1}|/u/{user[0]}|{user[1]}|{user[2]:,d}|{user[3]}|{user[4]:,d}\n"
         if i + 1 >= limit:
@@ -107,7 +107,7 @@ def main():
     ORDER BY coc DESC, soc DESC
     LIMIT :limit""",
         {"limit": 100},
-    )
+    ).fetchall()
 
     # Sidebar
     sidebar_text = f"""
