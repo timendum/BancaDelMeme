@@ -7,10 +7,9 @@ from sqlalchemy.orm import sessionmaker
 
 import config
 import message
-import utils
 from models import Buyable, Investor, Investment
 from stopwatch import Stopwatch
-from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine
+from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine, test_reddit_connection
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,7 +28,7 @@ def main():
                          user_agent=config.USER_AGENT)
 
     # We will test our reddit connection here
-    if not utils.test_reddit_connection(reddit):
+    if not test_reddit_connection(reddit):
         exit()
 
     praw.models.Comment.edit_wrap = edit_wrap
@@ -144,4 +143,4 @@ def main():
 
 
 if __name__ == "__main__":
-    utils.keep_up(main)
+    main()
