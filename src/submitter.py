@@ -76,7 +76,7 @@ def main():
 
     killhandler = KillHandler()
 
-    engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
+    engine = create_engine()
     sess_maker = scoped_session(sessionmaker(bind=engine))
 
     reddit = praw.Reddit(
