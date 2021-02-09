@@ -442,12 +442,13 @@ class CommentWorker:
 
     def rimuovi(self, sess, comment, rule):
         if not comment.author:
-            print("No author")
+            logging.info(" -- no author")
             return
         if comment.author.name not in config.ADMIN_ACCOUNTS:
-            print("No admin")
+            logging.info(" -- not admin")
             return self._sconosciuto(comment)
         reply = reply_wrap(comment.submission, message.rimozione(rule))
         comment.submission.mod.remove()
         if reply and reply != "0":
             reply.mod.lock()
+        logging.info(" -- removed post")
