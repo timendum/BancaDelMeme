@@ -447,6 +447,7 @@ class CommentWorker:
         if comment.author.name not in config.ADMIN_ACCOUNTS:
             print("No admin")
             return self._sconosciuto(comment)
-        reply_wrap(comment.submission, message.rimozione(rule))
-        print("OK")
+        reply = reply_wrap(comment.submission, message.rimozione(rule))
         comment.submission.mod.remove()
+        if reply and reply != "0":
+            reply.mod.lock()

@@ -868,4 +868,5 @@ def rimozione(rule) -> str:
     return f"""Il tuo post è stato rimosso
 perche' non rispetta la regola {rule}.
 
-Controlla [le regole](/r/BancaDelMeme/about/rules/), sono poche ma importanti."""
+Controlla [le regole](/r/BancaDelMeme/about/rules/), sono poche ma importanti.  
+Se hai dubbi [contattaci](/message/compose/?to=/r/BancaDelMeme)."""
