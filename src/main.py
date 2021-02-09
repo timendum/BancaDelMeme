@@ -15,21 +15,21 @@ message has message constants
 import logging
 import time
 
+import praw
 import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-import praw
-
 import config
-import utils
 import message
+from comment_worker import CommentWorker
 from kill_handler import KillHandler
 from models import Base
 from stopwatch import Stopwatch
-from comment_worker import CommentWorker
+from utils import keep_up, test_reddit_connection
 
 logging.basicConfig(level=logging.INFO)
+
 
 def main():
     """
@@ -59,14 +59,16 @@ def main():
 
     logging.info("Setting up Reddit connection")
 
-    reddit = praw.Reddit(client_id=config.CLIENT_ID,
-                         client_secret=config.CLIENT_SECRET,
-                         username=config.USERNAME,
-                         password=config.PASSWORD,
-                         user_agent=config.USER_AGENT)
+    reddit = praw.Reddit(
+        client_id=config.CLIENT_ID,
+        client_secret=config.CLIENT_SECRET,
+        username=config.USERNAME,
+        password=config.PASSWORD,
+        user_agent=config.USER_AGENT,
+    )
 
     # We will test our reddit connection here
-    if not utils.test_reddit_connection(reddit):
+    if not test_reddit_connection(reddit):
         exit()
 
     stopwatch = Stopwatch()
@@ -108,8 +110,8 @@ def main():
             logging.info(" -- processed in %.2fs", duration)
 
             # Report the Reddit API call stats
-            rem = int(reddit.auth.limits['remaining'])
-            res = int(reddit.auth.limits['reset_timestamp'] - time.time())
+            rem = int(reddit.auth.limits["remaining"])
+            res = int(reddit.auth.limits["reset_timestamp"] - time.time())
             logging.info(" -- API calls remaining: %.2f, resetting in %.2fs", rem, res)
 
             # Check for termination requests
@@ -119,5 +121,6 @@ def main():
 
             stopwatch.reset()
 
+
 if __name__ == "__main__":
-    utils.keep_up(main)
+    keep_up(main)
