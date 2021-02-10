@@ -62,7 +62,7 @@ def format_posters_full(users, limit=500) -> str:
 def main():
     logging.info("Starting leaderboard...")
 
-    engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
+    engine = create_engine()
     session_maker = sessionmaker(bind=engine)
 
     reddit = praw.Reddit(
