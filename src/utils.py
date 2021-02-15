@@ -21,7 +21,7 @@ DEPLOY_DATE = time.strftime("%c")
 BALANCE_CAP = 1000 * 1000 * 1000 * 1000 * 1000 * 1000  # One quintillion MemeCoins
 
 
-def investment_duration_string(duration):
+def investment_duration_string(duration) -> str:
     """
     We may change the investment duration in the future
     and this function allows us to have agile strings
@@ -56,16 +56,6 @@ def investment_duration_string(duration):
         inv_string += " "
 
     return inv_string
-
-
-def upvote_string():
-    """
-    We can make some funny replacements of upvotes
-    depending on what month it is
-    """
-    return {
-        10: "upvotes",
-    }.get(datetime.date.today().month, "upvotes")
 
 
 def test_reddit_connection(reddit):

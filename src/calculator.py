@@ -84,7 +84,6 @@ def main():
         new_balance = int(balance + (amount * factor))
         change = new_balance - balance
         profit = change - amount
-        percent_str = f"{int((profit/amount)*100)}%"
 
         # Updating the investor's variables
         investor.completed += 1
@@ -114,7 +113,6 @@ def main():
                 upvotes_now,
                 change,
                 profit,
-                percent_str,
                 investor.balance,
             )
 
@@ -132,7 +130,6 @@ def main():
                     upvotes_now,
                     change,
                     profit,
-                    percent_str,
                     investor.balance,
                 )
             )
