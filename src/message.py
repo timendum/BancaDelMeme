@@ -290,7 +290,7 @@ def modify_oc_return(profit):
 Per premiarti ti è stato accreditato un bonus
 pari all'1% degli investimenti (non tuoi) su questo post.
 
-Hai guadagnato cosi {profit:,d} Mem€"""
+Hai guadagnato cosi {int(profit):,d} Mem€"""
 
 
 def modify_oc_capped():
