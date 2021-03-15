@@ -99,11 +99,11 @@ def main():
     except telegram.error.TelegramError as e_teleg:
         logging.error(e_teleg)
         logging.critical("Telegram error!")
-        exit()
+        return()
 
     # We will test our reddit connection here
     if not test_reddit_connection(reddit):
-        exit()
+        return()
 
     logging.info("Starting checking submissions...")
 

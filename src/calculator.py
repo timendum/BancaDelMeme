@@ -36,7 +36,7 @@ def main():
 
     # We will test our reddit connection here
     if not utils.test_reddit_connection(reddit):
-        exit()
+        return()
 
     praw.models.Comment.edit_wrap = edit_wrap
 

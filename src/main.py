@@ -69,7 +69,7 @@ def main():
 
     # We will test our reddit connection here
     if not test_reddit_connection(reddit):
-        exit()
+        return()
 
     stopwatch = Stopwatch()
 

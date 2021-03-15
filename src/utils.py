@@ -92,8 +92,8 @@ def keep_up(function):
         try:
             return function()
         except Exception:
-            logging.exception("Exception, sleeping for 30 secs")
-            time.sleep(30)
+            logging.exception("Exception, sleeping and retrying")
+            time.sleep(60)
 
 
 def formatNumber(n):
