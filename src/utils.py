@@ -77,12 +77,6 @@ def test_reddit_connection(reddit):
         logging.critical("Invalid login credentials. Check your .env!")
         logging.critical("Fatal error. Cannot continue or fix the problem. Bailing out...")
         return False
-    except prawcore.exceptions.ResponseException as http_error:
-        traceback.print_exc()
-        logging.error(http_error)
-        logging.critical("Received 401 HTTP response. Try checking your .env!")
-        logging.critical("Fatal error. Cannot continue or fix the problem. Bailing out...")
-        return False
     return True
 
 
