@@ -18,6 +18,7 @@ stopwatch is the way we record the time spent on an operation
 import html
 import logging
 import sqlite3
+import urllib.parse
 
 import praw
 import telegram
@@ -36,7 +37,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def post_telegram(conn, submission, tbot):
-    link = "https://reddit.com{id}".format(id=submission.permalink)
+    link = "https://reddit.com{id}".format(id=urllib.parse.quote(submission.permalink))
     title = html.escape(submission.title or "")
     if len(title) <= 3:
         title = "Titolo: " + title
