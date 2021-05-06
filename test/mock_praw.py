@@ -23,6 +23,8 @@ class Submission:
         self.removed = False
         self.permalink = f"r/a/{submission_id}/"
         self.title = f"Submission {submission_id}"
+        self.domain = ""
+        self.url = ""
         self.mod = MagicMock()
 
     def __str__(self):
