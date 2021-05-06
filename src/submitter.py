@@ -36,14 +36,26 @@ praw.models.Submission.reply_wrap = reply_wrap
 logging.basicConfig(level=logging.INFO)
 
 
-def post_telegram(conn, submission, tbot):
+def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
     link = "https://reddit.com{id}".format(id=urllib.parse.quote(submission.permalink))
     title = html.escape(submission.title or "")
     if len(title) <= 3:
         title = "Titolo: " + title
     text = "<a href='{}'>{}</a>".format(link, title)
     logging.info(" -- Posting %s", link)
-    tbot.sendMessage(chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text)
+    if submission.domain == "i.redd.it" or submission.url.split(".")[-1] in (
+        "png",
+        "jpg",
+        "jpeg",
+    ):
+        tbot.sendPhoto(
+            chat_id=config.TG_CHANNEL,
+            parse_mode=telegram.ParseMode.HTML,
+            caption=text,
+            photo=submission.url,
+        )
+    else:
+        tbot.sendMessage(chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text)
     conn.execute("INSERT INTO posts (id) values (?)", (submission.id,))
     conn.commit()
 
@@ -68,7 +80,7 @@ def post_reply(submission):
     return bot_reply
 
 
-def main():
+def main() -> None:
     """
     This is the main function that listens to new submissions
     and then posts the ATTENTION sticky comment.
@@ -100,11 +112,11 @@ def main():
     except telegram.error.TelegramError as e_teleg:
         logging.error(e_teleg)
         logging.critical("Telegram error!")
-        return()
+        return
 
     # We will test our reddit connection here
     if not test_reddit_connection(reddit):
-        return()
+        return
 
     logging.info("Starting checking submissions...")
 
