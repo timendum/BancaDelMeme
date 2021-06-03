@@ -48,12 +48,15 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         "jpg",
         "jpeg",
     ):
-        tbot.sendPhoto(
-            chat_id=config.TG_CHANNEL,
-            parse_mode=telegram.ParseMode.HTML,
-            caption=text,
-            photo=submission.url,
-        )
+        try:
+            tbot.sendPhoto(
+                chat_id=config.TG_CHANNEL,
+                parse_mode=telegram.ParseMode.HTML,
+                caption=text,
+                photo=submission.url,
+            )
+        except telegram.error.BadRequest:
+            tbot.sendMessage(chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text)
     else:
         tbot.sendMessage(chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text)
     conn.execute("INSERT INTO posts (id) values (?)", (submission.id,))
