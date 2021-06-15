@@ -273,6 +273,9 @@ class CommentWorker:
         """
         This function invests
         """
+        if config.CLOSED:
+            return comment.reply_wrap(message.CLOSED_ORG)
+
         multiplier = CommentWorker.multipliers.get(suffix, 1)
 
         # Allows input such as '!invest 100%' and '!invest 50%'
@@ -412,6 +415,9 @@ class CommentWorker:
         """
         Returns a list of all active investments made by the user
         """
+        if config.CLOSED:
+            return comment.reply_wrap(message.CLOSED_ORG)
+
         investments = (
             sess.query(Investment)
             .filter(Investment.done == 0)

@@ -73,12 +73,18 @@ def post_reply(submission):
         return
 
     # Post a comment to let people know where to invest
-    bot_reply = submission.reply_wrap(message.invest_no_fee(f"u/{submission.author.name}"))
+    if config.CLOSED:
+        bot_reply = submission.reply_wrap(message.CLOSED_ORG)
+    else:
+        bot_reply = submission.reply_wrap(message.invest_no_fee(f"u/{submission.author.name}"))
 
     # Sticky the comment
     if config.IS_MODERATOR:
         bot_reply.mod.distinguish(how="yes", sticky=True)
         bot_reply.mod.approve()
+        if config.CLOSED:
+            bot_reply.mod.lock()
+            bot_reply = None
     logging.info(" -- Reply %s", bot_reply)
     return bot_reply
 

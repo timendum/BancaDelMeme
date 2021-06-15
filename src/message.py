@@ -223,6 +223,12 @@ def invest_no_fee(name):
     return INVEST_PLACE_HERE_NO_FEE + TEMPLATE_HINT_ORG.replace("%NAME%", name)
 
 
+CLOSED_ORG = """
+**La stagione è in chiusura.**
+
+Non è possibile fare nuovi investimenti.
+"""
+
 MAINTENANCE_ORG = """
 **Il bot è in manutenzione per ragioni tecniche.**
 
