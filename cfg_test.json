@@ -15,6 +15,7 @@
     "BOT_ADMIN_REDDIT_ACCOUNTS": [
         "username"
     ],
+    "BOT_CLOSED": false,
     "BOT_CLIENT_ID": "client_id",
     "BOT_CLIENT_SECRET": "client_secred",
     "BOT_USER_AGENT": "UserAgent",

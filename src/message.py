@@ -224,7 +224,7 @@ def invest_no_fee(name):
 
 
 CLOSED_ORG = """
-**La stagione è in chiusura.**
+**La stagione è chiusa.**
 
 Non è possibile fare nuovi investimenti.
 """
