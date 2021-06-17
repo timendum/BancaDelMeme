@@ -8,11 +8,12 @@ from sqlalchemy.orm import sessionmaker
 
 import config
 import utils
-from models import Investment, Investor
+import leaderboard
+from models import Investment, Investor, Buyable
 from utils import formatNumber
 
 logging.basicConfig(level=logging.INFO)
-localtime = time.strftime('{%Y-%m-%d %H:%M:%S}')
+localtime = time.strftime("{%Y-%m-%d %H:%M:%S}")
 
 # TODO: add docstring
 def main():
@@ -23,23 +24,53 @@ def main():
 
     sess = session_maker()
 
-    top_users = sess.query(
-            Investor.name,
-            func.coalesce(Investor.balance+func.sum(Investment.amount), Investor.balance).label('networth')).\
-            outerjoin(Investment, and_(Investor.name == Investment.name, Investment.done == 0)).\
-        group_by(Investor.name).\
-        order_by(desc('networth')).\
-        all()
+    # check for open Buyable
+    buyables = sess.query(Buyable).filter(Buyable.done == 0).all()
+    if buyables:
+        print(f"Found {len(buyables)} active buyables, stopping")
+        return
 
-    top_users_text = "Rank|User|Net Worth\n"
-    top_users_text += ":-:|:-:|:-:\n"
-    for i, user in enumerate(top_users):
-        top_users_text += f"{i + 1}|/u/{user.name}|{formatNumber(user.networth)} M€\n"
+    # check for open Investment
+    investments = sess.query(Investment).filter(Investment.done == 0).all()
+    if investments:
+        print(f"Found {len(Investment)} active investments, stopping")
+        return
 
-    with open('stagione.txt', 'wt') as oo:
-        oo.write(top_users_text)
+    logging.info("Checks ok")
+
+    top_users = (
+        sess.query(
+            Investor.name, func.coalesce(Investor.balance, Investor.balance).label("networth")
+        )
+        .group_by(Investor.name)
+        .order_by(desc("networth"))
+        .all()
+    )
+    logging.info("top_users fetched")
+
+    top_poster = sess.execute(
+        """
+    SELECT  name,
+            SUM(oc) AS coc,
+            SUM(CASE OC WHEN 1 THEN final_upvotes ELSE 0 END) AS soc,
+            count(*) as ct,
+            sum(final_upvotes) as st
+    FROM "Buyables"
+    WHERE oc <> 0
+    GROUP BY name
+    ORDER BY st DESC, coc DESC, soc DESC""",
+    ).fetchall()
+    logging.info("top_poster fetched")
+
+    with open("stagione.txt", "wt") as oo:
+        oo.write("# Stagione XXX\n\nClassifica definitiva della xxx stagione.\n\n")
+        oo.write(leaderboard.format_investor(top_users, 10000))
+        oo.write("\n\n\n# Migliori autori di OC\n\n\n")
+        oo.write(leaderboard.format_posters_full(top_poster, 1000))
 
     sess.close()
+
+    logging.info("Done")
 
 
 if __name__ == "__main__":
