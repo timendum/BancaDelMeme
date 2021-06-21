@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 def reset_all():
     logging.info("Preparing for new season...")
 
-    engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
+    engine = create_engine()
     session_maker = sessionmaker(bind=engine)
     stopwatch = Stopwatch()
 
