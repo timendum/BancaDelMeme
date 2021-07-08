@@ -125,7 +125,14 @@ def edit_wrap(self, body):
         except Exception as e:
             logging.error(e)
             traceback.print_exc()
-            return False
+            logging.info(" -- 2nd try in 30 seconds")
+            time.sleep(30)
+            try:
+                return self.edit(body)
+            except Exception as e:
+                logging.error(e)
+                traceback.print_exc()
+                return False
     else:
         logging.info(body)
         return False
