@@ -9,7 +9,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 import config
 from comment_worker import CommentWorker
-from models import Base, Investor, Firm, Investment
+from models import Base, Investor, Investment
 from mock_praw import Comment, Submission
 
 class Test(unittest.TestCase):
@@ -52,12 +52,4 @@ class Test(unittest.TestCase):
             .filter(Investor.name == username)\
             .first()
         investor.balance = balance
-        sess.commit()
-
-    def set_firm_balance(self, firm_name, balance):
-        sess = self.Session()
-        firm = sess.query(Firm)\
-            .filter(Firm.name == firm_name)\
-            .first()
-        firm.balance = balance
         sess.commit()
