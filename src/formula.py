@@ -2,8 +2,11 @@ import math
 
 from fastnumbers import fast_float
 
+OP_BONUS = 1.5
+OC_BONUS = 50  # return investment.amount / OC_BONUS
 
-def calculate(new, old, net_worth=0):
+
+def calculate(new, old, net_worth=0, top_networth=0):
     new = fast_float(new)
     old = fast_float(old)
     net_worth = fast_float(net_worth)
@@ -35,15 +38,7 @@ def calculate(new, old, net_worth=0):
     # Calculate return
     factor = sigmoid(delta, sig_max, sig_mp, sig_stp)
 
-    if net_worth:
-        # Normalize between -1 and 1
-        factor = factor - 1
-
-        # Adjust based on net worth
-        factor = factor * net_worth_coefficient(net_worth)
-
-        # Return investment amount multiplier (change + 1)
-        factor = factor + 1
+    factor = adjust(factor, net_worth, top_networth)
 
     factor = max(0, factor)
     return factor
@@ -76,6 +71,7 @@ def sigmoid_midpoint(old):
 STEEP_A = 0.05
 STEEP_C = 400
 
+
 def sigmoid_steepness(old):
     return STEEP_A / ((old / STEEP_C) + 1)
 
@@ -87,5 +83,31 @@ def linear_interpolate(x, x_0, x_1, y_0, y_1):
     return y
 
 
-def net_worth_coefficient(net_worth):
-    return net_worth**-0.155 * 6
+def adjust(factor, net_worth=0, top_networth=0) -> float:
+    # aggiusta il factor per movimentare la classifica
+    if net_worth and top_networth:
+        # Normalize between -1 and 1
+        # factor = factor - 1
+
+        # Adjust based on net worth, only for earnings
+        if factor > 1:
+            factor = factor * net_worth_coefficient(net_worth, top_networth)
+
+        # Return investment amount multiplier (change + 1)
+        # factor = factor + 1
+    return factor
+
+
+def net_worth_coefficient(net_worth, top_networth=0) -> float:
+    # questa funzione restituisce un moltimplicatore che amplifica (o riduce)
+    # il ritorno di un investimento in base alla rapporto tra net_worth e top_networth
+    # più l'investitore è povero, più il ritorno sarà amplificato (valore >1)
+    # più il patrimonio dell'investitore è sopra lo 0.7 del top_networth,
+    #     più il ritorno sarà diminuito
+    factor = 0.155
+    if top_networth:
+        # normalizzo il rapporto tra patrimonio e massimo in 100esimi
+        net_worth = max(1, net_worth * 100 / top_networth)
+        # il fattore è pre-calcolato rispetto ad un massimo di 100
+        factor = 0.4217397848287947  # math.log(6, 100 * 0.7)
+    return (net_worth ** -factor) * 6

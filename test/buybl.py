@@ -1,5 +1,6 @@
 import sys
-sys.path.append('src')
+
+sys.path.append("src")
 
 import time
 import unittest
@@ -13,6 +14,7 @@ import buyabler
 import config
 from models import Investor, Investment, Buyable
 from mock_praw import Comment, Submission, Reddit
+
 
 class BuyableTest(unittest.TestCase):
     def setUp(self):
@@ -37,10 +39,10 @@ class BuyableTest(unittest.TestCase):
         self.session.commit()
         self.session.close()
 
-    def create_investment(self, amount, iid='0'):
-        investor = Investor(name='investor' + iid)
-        submission = Submission('sid' + iid)
-        comment = Comment('cid' + iid, investor.name, 'dummy', submission)
+    def create_investment(self, amount, iid="0"):
+        investor = Investor(name="investor" + iid)
+        submission = Submission("sid" + iid)
+        comment = Comment("cid" + iid, investor.name, "dummy", submission)
         self.reddit.add_submission(submission)
         investment = Investment(
             post=comment.submission.id,
@@ -51,7 +53,7 @@ class BuyableTest(unittest.TestCase):
             response="0",
             done=False,
         )
-        buyable = Buyable(post=submission.id, name=submission.author.name, response='brid' + iid)
+        buyable = Buyable(post=submission.id, name=submission.author.name, response="brid" + iid)
         buyable.time = int(time.time()) - config.INVESTMENT_DURATION - 1
         sess = self.session
         sess.add(buyable)
@@ -61,63 +63,49 @@ class BuyableTest(unittest.TestCase):
         return investor, buyable, submission
 
     def test_not_oc(self):
-        investor, _, submission = self.create_investment(100, iid='0')
+        investor, _, submission = self.create_investment(100, iid="0")
         self.buyabler.main()
         sess = self.session
-        investor = sess.query(Investor).\
-            filter(Investor.name == investor.name).\
-            one()
+        investor = sess.query(Investor).filter(Investor.name == investor.name).one()
         self.assertTrue(investor.balance == config.STARTING_BALANCE)
-        buyable = sess.query(Buyable).\
-            filter(Buyable.post == submission.id).\
-            one()
+        buyable = sess.query(Buyable).filter(Buyable.post == submission.id).one()
         self.assertTrue(buyable.done)
         self.assertTrue(not buyable.oc)
         self.assertEqual(buyable.profit, 0)
 
     def test_base(self):
-        investor, buyable, submission = self.create_investment(1000, iid='1')
-        submission.link_flair_text = 'OC'
+        investor, buyable, submission = self.create_investment(1000, iid="1")
+        submission.link_flair_text = "OC"
         investor = Investor(name=submission.author.name)
         sess = self.session
         sess.add(investor)
         sess.commit()
         self.buyabler.main()
-        investor = sess.query(Investor).\
-            filter(Investor.name == submission.author.name).\
-            one()
+        investor = sess.query(Investor).filter(Investor.name == submission.author.name).one()
         self.assertTrue(investor.balance != config.STARTING_BALANCE)
-        buyable = sess.query(Buyable).\
-            filter(Buyable.post == submission.id).\
-            one()
+        buyable = sess.query(Buyable).filter(Buyable.post == submission.id).one()
         self.assertTrue(buyable.done)
         self.assertTrue(buyable.oc)
         self.assertTrue(buyable.profit > 0)
 
     def test_not_investor(self):
-        _, buyable, submission = self.create_investment(100, iid='2')
-        submission.link_flair_text = 'OC'
+        _, buyable, submission = self.create_investment(100, iid="2")
+        submission.link_flair_text = "OC"
         self.buyabler.main()
         sess = self.session
-        buyable = sess.query(Buyable).\
-            filter(Buyable.post == submission.id).\
-            one()
+        buyable = sess.query(Buyable).filter(Buyable.post == submission.id).one()
         self.assertTrue(buyable.done)
         self.assertEqual(buyable.profit, 0)
 
     def test_deleted(self):
-        investor, _, submission = self.create_investment(100, iid='3')
+        investor, _, submission = self.create_investment(100, iid="3")
         submission.removed = True
         investor = Investor(name=submission.author.name)
         sess = self.session
         sess.add(investor)
         sess.commit()
         self.buyabler.main()
-        investor = sess.query(Investor).\
-            filter(Investor.name == submission.author.name).\
-            one()
+        investor = sess.query(Investor).filter(Investor.name == submission.author.name).one()
         self.assertTrue(investor.balance == config.STARTING_BALANCE)
-        with self.assertRaises(NoResultFound): 
-            sess.query(Buyable).\
-                filter(Buyable.post == submission.id).\
-                one()
+        with self.assertRaises(NoResultFound):
+            sess.query(Buyable).filter(Buyable.post == submission.id).one()

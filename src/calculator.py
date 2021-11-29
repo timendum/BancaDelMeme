@@ -3,7 +3,9 @@ import logging
 import time
 
 import praw
+from sqlalchemy import func, and_, desc
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
 import config
 import formula
@@ -15,6 +17,7 @@ from stopwatch import Stopwatch
 from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine
 
 logging.basicConfig(level=logging.INFO)
+
 
 # TODO: rethink how to structure this main
 # TODO: add docstring
@@ -36,11 +39,34 @@ def main():
 
     # We will test our reddit connection here
     if not utils.test_reddit_connection(reddit):
-        return()
+        return ()
 
     praw.models.Comment.edit_wrap = edit_wrap
-
     stopwatch = Stopwatch()
+
+    logging.info("Retrieving top ...")
+
+    # query
+    sess = session_maker()
+    try:
+        top_networth = (
+            sess.query(
+                Investor.name,
+                func.coalesce(
+                    Investor.balance + func.sum(Investment.amount), Investor.balance
+                ).label("networth"),
+            )
+            .outerjoin(Investment, and_(Investor.name == Investment.name, Investment.done == 0))
+            .group_by(Investor.name)
+            .order_by(desc("networth"))
+            .limit(1)
+            .one()
+        )[1]
+    except NoResultFound:
+        top_networth = 0
+    top_networth = max(top_networth, config.STARTING_BALANCE * 10)  # al last starting * 10
+    sess.close()
+    logging.info("Top networth: %d", top_networth)
 
     logging.info("Monitoring active investments...")
 
@@ -75,9 +101,17 @@ def main():
         # Retrieve the post's current upvote count (triggers an API call)
         upvotes_now = post.ups
         investment.final_upvotes = upvotes_now
+        investment.op = (post.author and investor.name == post.author.name)
+        investment.net_worth = net_worth
+        investment.top_networth = top_networth
 
         # Updating the investor's balance
-        factor = formula.calculate(upvotes_now, investment.upvotes, net_worth)
+        factor = formula.calculate(upvotes_now, investment.upvotes, net_worth, top_networth)
+
+        if factor > 1 and post.author and investor.name == post.author.name:
+            # bonus per OP
+            factor *= formula.OP_BONUS
+
         amount = investment.amount
         balance = investor.balance
 
@@ -136,10 +170,13 @@ def main():
 
         investment.success = profit > 0
         investment.profit = profit
-        investment.firm_tax = 0
         investment.done = True
 
         sess.commit()
+
+        if top_networth < investor.balance:
+            top_networth = investor.balance
+            logging.info("New Top networth: %d", top_networth)
 
         # Measure how long processing took
         duration = stopwatch.measure()

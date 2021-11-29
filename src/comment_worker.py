@@ -306,6 +306,7 @@ class CommentWorker:
         # 0 upvotes is too strong, so what we do is make around 1 minumum
         if upvotes_now < 1:
             upvotes_now = 1
+        deltatime = min(int((comment.created_utc - comment.submission.created_utc) / 60), 60)
 
         # Sending a confirmation
         response = comment.reply_wrap(message.modify_invest(amount, upvotes_now, new_balance))
@@ -314,6 +315,7 @@ class CommentWorker:
             Investment(
                 post=comment.submission.id,
                 upvotes=upvotes_now,
+                deltatime=deltatime,
                 comment=comment.id,
                 name=author,
                 amount=amount,

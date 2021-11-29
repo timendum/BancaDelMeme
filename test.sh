@@ -4,7 +4,7 @@ TEST_ENV=.testenv
 
 if [ ! -d $TEST_ENV ]; then
   # set up virtual environment
-  python -m venv $TEST_ENV
+  virtualenv $TEST_ENV
   if [ -f $TEST_ENV/bin/activate ]; then
     source $TEST_ENV/bin/activate
   else

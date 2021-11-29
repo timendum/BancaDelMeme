@@ -1,5 +1,6 @@
 import sys
-sys.path.append('src')
+
+sys.path.append("src")
 
 import os
 import unittest
@@ -11,6 +12,7 @@ import config
 from comment_worker import CommentWorker
 from models import Base, Investor, Investment
 from mock_praw import Comment, Submission
+
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -33,12 +35,12 @@ class Test(unittest.TestCase):
         sess.query(Investor).delete()
         sess.commit()
 
-    def command(self, command, username='testuser', post='testpost', lcomment=None, lpost=None):
+    def command(self, command, username="testuser", post="testpost", lcomment=None, lpost=None):
         submission = Submission(post)
         self.submissions.append(submission)
         if lpost:
             lpost(submission)
-        comment = Comment(post + '/id', username, command, submission)
+        comment = Comment(post + "/id", username, command, submission)
         submission.replies.append(comment)
         self.comments.append(comment)
         if lcomment:
@@ -46,10 +48,8 @@ class Test(unittest.TestCase):
         self.worker(comment)
         return comment.replies
 
-    def set_balance(self, balance, username='testuser'):
+    def set_balance(self, balance, username="testuser"):
         sess = self.Session()
-        investor = sess.query(Investor)\
-            .filter(Investor.name == username)\
-            .first()
+        investor = sess.query(Investor).filter(Investor.name == username).first()
         investor.balance = balance
         sess.commit()

@@ -46,7 +46,9 @@ class Investment(Base):
     final_upvotes = Column(Integer)
     success = Column(Boolean, default=False)
     profit = Column(BigInteger, default=0)
-    firm_tax = Column(Integer, default=0)
+    net_worth = Column(Integer, default=0)
+    net_worth = Column(Integer, default=0)
+    op = Column(Boolean, default=False)
 
     __table_args__ = (Index("ix_Investments_name_done", "name", "done"),)
 
@@ -70,9 +72,6 @@ class Investor(Base):
     balance = Column(BigInteger, default=config.STARTING_BALANCE)
     completed = Column(Integer, default=0)
     broke = Column(Integer, default=0)
-    badges = Column(String(1024), default="[]")
-    firm = Column(Integer, default=0)
-    firm_role = Column(String(32), default="")
 
     def networth(self, sess):
         """Return the balance plus all invested amounts (if any)"""

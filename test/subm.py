@@ -1,5 +1,6 @@
 import sys
-sys.path.append('src')
+
+sys.path.append("src")
 
 import unittest
 import sqlite3
@@ -15,6 +16,7 @@ import mock_praw
 import mock_telegram
 from unittest.mock import Mock
 
+
 class SubmitterTest(unittest.TestCase):
     def setUp(self):
         # create sqlite db
@@ -25,7 +27,7 @@ class SubmitterTest(unittest.TestCase):
         sess.query(Investor).delete()
         sess.commit()
         self.submitter = submitter
-        #self.submitter.time.sleep = sleep_func()
+        # self.submitter.time.sleep = sleep_func()
         self.reddit = mock_praw.Reddit()
         self.submitter.praw.Reddit = Mock(return_value=self.reddit)
         self.submitter.telegram = mock_telegram
@@ -47,7 +49,7 @@ class SubmitterTest(unittest.TestCase):
         submission = self.reddit.subreddit().stream.submissions()[0]
         replies = submission.replies
         self.assertEqual(len(replies), 1)
-        self.assertEqual(replies[0].body, message.invest_no_fee('u/' + submission.author.name))
+        self.assertEqual(replies[0].body, message.invest_no_fee("u/" + submission.author.name))
 
     def test_sticky(self):
         submission = self.reddit.subreddit().stream.submissions()[0]

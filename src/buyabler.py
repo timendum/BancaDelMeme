@@ -7,25 +7,27 @@ from sqlalchemy.orm import sessionmaker
 
 import config
 import message
-from models import Buyable, Investor, Investment
+from formula import OC_BONUS
+from models import Buyable, Investment, Investor
 from stopwatch import Stopwatch
-from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine, test_reddit_connection
+from utils import BALANCE_CAP, EmptyResponse, create_engine, edit_wrap, test_reddit_connection
 
 logging.basicConfig(level=logging.INFO)
 
-# TODO: rethink how to structure this main
-# TODO: add docstring
+
 def main():
     logging.info("Starting buyable...")
 
     engine = create_engine()
     session_maker = sessionmaker(bind=engine, autoflush=False)
 
-    reddit = praw.Reddit(client_id=config.CLIENT_ID,
-                         client_secret=config.CLIENT_SECRET,
-                         username=config.USERNAME,
-                         password=config.PASSWORD,
-                         user_agent=config.USER_AGENT)
+    reddit = praw.Reddit(
+        client_id=config.CLIENT_ID,
+        client_secret=config.CLIENT_SECRET,
+        username=config.USERNAME,
+        password=config.PASSWORD,
+        user_agent=config.USER_AGENT,
+    )
 
     # We will test our reddit connection here
     if not test_reddit_connection(reddit):
@@ -40,10 +42,12 @@ def main():
     sess = session_maker()
 
     then = int(time.time()) - config.INVESTMENT_DURATION
-    buyables = sess.query(Buyable).\
-        filter(Buyable.done == 0).\
-        filter(Buyable.time < then).\
-        order_by(Buyable.time.asc())
+    buyables = (
+        sess.query(Buyable)
+        .filter(Buyable.done == 0)
+        .filter(Buyable.time < then)
+        .order_by(Buyable.time.asc())
+    )
 
     for buyable in buyables:
         duration = stopwatch.measure()
@@ -70,7 +74,7 @@ def main():
             duration = stopwatch.measure()
             logging.info(" -- processed in %.2fs", duration)
             continue
-        buyable.oc = (submission.link_flair_text == 'OC')
+        buyable.oc = submission.link_flair_text == "OC"
         if not buyable.oc:
             logging.info(" -- not OC")
             buyable.done = True
@@ -91,12 +95,14 @@ def main():
         balance = investor.balance
 
         # Retrieve the post investments
-        investments = sess.query(Investment)\
-            .filter(Investment.post == buyable.post)\
+        investments = (
+            sess.query(Investment)
+            .filter(Investment.post == buyable.post)
             .filter(Investment.name != buyable.name)
+        )
         profit = 0
         for investment in investments:
-            profit += investment.amount / 100
+            profit += investment.amount / OC_BONUS
         net_worth = investor.networth(sess)
         if net_worth > 0:
             profit = int(min(profit, net_worth))
@@ -135,8 +141,8 @@ def main():
         logging.info(" -- processed in %.2fs", duration)
 
         # Report the Reddit API call stats
-        rem = int(reddit.auth.limits['remaining'])
-        res = int(reddit.auth.limits['reset_timestamp'] - time.time())
+        rem = int(reddit.auth.limits["remaining"])
+        res = int(reddit.auth.limits["reset_timestamp"] - time.time())
         logging.info(" -- API calls remaining: %s, resetting in %.2fs", rem, res)
 
     sess.close()
