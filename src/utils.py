@@ -92,7 +92,7 @@ def keep_up(function):
 
 def formatNumber(n):
     """Format Mem€ in a short format"""
-    suffixes = {6: 'M', 9: 'B', 12: 'T', 15: 'Q'}
+    suffixes = {6: 'M', 9: 'B', 12: 'T', 15: 'P', 18: 'E'}
     digits = len(str(n))
     if digits <= 6:
         return '{:,}'.format(n)
