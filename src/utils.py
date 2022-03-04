@@ -5,7 +5,6 @@ logging is the general stdout for us
 
 prawcore has the list of praw exceptions
 """
-import datetime
 import traceback
 import logging
 import time
@@ -92,7 +91,7 @@ def keep_up(function):
 
 def formatNumber(n):
     """Format Mem€ in a short format"""
-    suffixes = {6: 'M', 9: 'B', 12: 'T', 15: 'P', 18: 'E'}
+    suffixes = {6: 'M', 9: 'B', 12: 'T', 15: 'Q', 18: 'E'}
     digits = len(str(n))
     if digits <= 6:
         return '{:,}'.format(n)
