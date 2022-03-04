@@ -47,7 +47,8 @@ class Investment(Base):
     success = Column(Boolean, default=False)
     profit = Column(BigInteger, default=0)
     net_worth = Column(Integer, default=0)
-    net_worth = Column(Integer, default=0)
+    top_networth = Column(Integer, default=0)
+    balance = Column(BigInteger, default=0)
     op = Column(Boolean, default=False)
 
     __table_args__ = (Index("ix_Investments_name_done", "name", "done"),)
@@ -103,6 +104,7 @@ class Buyable(Base):
     name = Column(String(20), nullable=False, index=True)
     final_upvotes = Column(Integer)
     profit = Column(BigInteger, default=0)
+    balance = Column(BigInteger, default=0)
 
     def __str__(self):
         return (

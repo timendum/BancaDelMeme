@@ -133,6 +133,7 @@ def main():
 
         buyable.profit = profit
         buyable.done = True
+        buyable.balance = investor.balance
 
         sess.commit()
 

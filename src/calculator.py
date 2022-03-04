@@ -101,7 +101,7 @@ def main():
         # Retrieve the post's current upvote count (triggers an API call)
         upvotes_now = post.ups
         investment.final_upvotes = upvotes_now
-        investment.op = (post.author and investor.name == post.author.name)
+        investment.op = post.author and investor.name == post.author.name
         investment.net_worth = net_worth
         investment.top_networth = top_networth
 
@@ -167,10 +167,15 @@ def main():
                     investor.balance,
                 )
             )
+            try:
+                post.subreddit.message(*message.notify_capped(investor, investment, response))
+            except:
+                logging.error("Modmail fallita!")
 
         investment.success = profit > 0
         investment.profit = profit
         investment.done = True
+        investment.balance = investor.balance
 
         sess.commit()
 

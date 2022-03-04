@@ -1,5 +1,6 @@
 import datetime
 import time
+from typing import Tuple
 
 import config
 import utils
@@ -7,7 +8,7 @@ import utils
 INVESTMENT_DURATION_VAR = utils.investment_duration_string(config.INVESTMENT_DURATION)
 
 
-def modify_create(username, balance):
+def modify_create(username, balance) -> str:
     return f"""
 *Conto creato!*
 
@@ -25,11 +26,11 @@ Non capisco se sei troppo entusiasta o stai cercando di truffarmi. Hai già un a
 """
 
 
-def _header_investment(amount, initial_upvotes):
+def _header_investment(amount, initial_upvotes) -> str:
     return f"*{int(amount):,} Mem€ investiti @ {initial_upvotes} upvote*\n"
 
 
-def modify_invest(amount, initial_upvotes, new_balance):
+def modify_invest(amount, initial_upvotes, new_balance) -> str:
     return (
         _header_investment(amount, initial_upvotes)
         + f"""
@@ -37,11 +38,13 @@ Il tuo investimento è ora attivo.
 Valuterò il tuo profitto in {INVESTMENT_DURATION_VAR}
 e aggiornerò questo stesso commento. Non facciamo che ci perdiamo di vista!
 
-Il tuo saldo attuale è **{int(new_balance):,} Mem€**."""
+Il tuo saldo attuale è **{utils.formatNumber(new_balance)} Mem€**."""
     )
 
 
-def modify_invest_return(amount, initial_upvotes, final_upvotes, returned, profit, new_balance):
+def modify_invest_return(
+    amount, initial_upvotes, final_upvotes, returned, profit, new_balance
+) -> str:
     text = _header_investment(amount, initial_upvotes)
     text += "\nUPDATE: Il tuo investimento è maturato. "
     if profit > 0:
@@ -52,11 +55,13 @@ def modify_invest_return(amount, initial_upvotes, final_upvotes, returned, profi
         text += f"Sei andato in pari! Hai guadagnato {int(profit):,} Mem€"
     text += f" ({round((profit/amount)*100)}%).\n"
     text += f"\n*{int(returned):,} Mem€ restituiti @ {final_upvotes:,} upvote*\n"
-    text += f"\nIl tuo nuovo saldo is **{new_balance:,} Mem€**."
+    text += f"\nIl tuo nuovo saldo is **{utils.formatNumber(new_balance)} Mem€**."
     return text
 
 
-def modify_invest_capped(amount, initial_upvotes, final_upvotes, returned, profit, new_balance):
+def modify_invest_capped(
+    amount, initial_upvotes, final_upvotes, returned, profit, new_balance
+) -> str:
     text = _header_investment(amount, initial_upvotes)
     text += "\nUPDATE: Il tuo investimento è maturato. "
     text += f"È andato alla grande! Hai guadagnato {int(profit):,} Mem€"
@@ -68,9 +73,17 @@ Le future generazioni ti ricorderanno come titano degli investimenti.
 
 *"Alessandro pianse, poiché non c'erano altri mondi da conquistare.."* (...ancora)\n"""
     text += f"\nIl tuo nuovo saldo is **{new_balance:,} Mem€** (il saldo massimo)."
+    return text
 
 
-def modify_insuff(balance_t):
+def notify_capped(investor, investment, response) -> Tuple[str, str]:
+    text = f"L'investitore u/{investor.name} ha raggiunto il limite di {investor.balance:,} Mem€"
+    text += f" con [questo investimento]({response.permalink})."
+    text += "\n\n Valutate se chiuere la stagione."
+    return f"Limite raggiunto per {investor.name}", text
+
+
+def modify_insuff(balance_t) -> str:
     return f"""
 Non hai abbastanza Mem€ per fare questo investimento.
 
@@ -80,7 +93,7 @@ Se hai meno di 100 Mem€ e nessun investimento in corso, prova ad inviare `!ban
 """
 
 
-def modify_broke(times):
+def modify_broke(times) -> str:
     return f"""
 OOps, sei in bancarotta.
 
@@ -90,14 +103,14 @@ Sei andato in bancarotta {times} volte.
 """
 
 
-def modify_broke_active(active):
+def modify_broke_active(active) -> str:
     text = "Hai ancora 1 investmento attivo."
     if active > 1:
         text = f"Hai ancora {active} investmenti attivi."
     return text + "\n\nDovrai attendere che vengano completati."
 
 
-def modify_broke_money(amount):
+def modify_broke_money(amount) -> str:
     return f"Non sei così povero! Hai ancora **{amount} Mem€**."
 
 
@@ -133,7 +146,7 @@ BALANCE_ORG = """
 """
 
 
-def modify_balance(balance, net_worth):
+def modify_balance(balance, net_worth) -> str:
     return f"""Attualmente, il tuo saldo è {balance:,} Mem€**.
 
 In investimenti hai {net_worth - balance:,} Mem€ impegnati,
@@ -147,7 +160,7 @@ ACTIVE_ORG = """
 """
 
 
-def modify_active(active_investments):
+def modify_active(active_investments) -> str:
     if not active_investments:
         return "Non hai alcun investimento attivo al momento."
 
@@ -172,13 +185,13 @@ def modify_active(active_investments):
     return f"Hai {len(active_investments)} investimenti attivi: \n\n" + investments_list
 
 
-def modify_min_invest(minim):
+def modify_min_invest(minim) -> str:
     return f"""L'investimento minimo consentito è
 di 100 Mem€ o di {round(minim):,} (1% del tuo saldo);
 il più alto dei due."""
 
 
-def modify_market(inves, cap, invs_cap):
+def modify_market(inves, cap, invs_cap) -> str:
     return f"""
 Il mercato, in questo momento, ha **{inves:,}** investimenti attivi.
 
@@ -188,7 +201,7 @@ Ci sono **{int(invs_cap):,} Mem€** in circolazione su investimenti al momento.
 """
 
 
-def modify_top(leaders):
+def modify_top(leaders) -> str:
     top_string = "Gli investitori con il valore netto più alto (saldo + investimenti attivi):\n\n"
     for leader in leaders:
         top_string = f"{top_string}\n\n{leader.name}: {int(leader.networth):,} Mem€"
@@ -219,14 +232,15 @@ per una spiegazione più dettagliata.
 """
 
 
-def invest_no_fee(name):
+def invest_no_fee(name) -> str:
     return INVEST_PLACE_HERE_NO_FEE + TEMPLATE_HINT_ORG.replace("%NAME%", name)
 
 
 CLOSED_ORG = """
 **La stagione è chiusa.**
 
-Non è possibile fare nuovi investimenti.
+Non è possibile fare nuovi investimenti.  
+I nuovi post sono comunque i benvenuti.
 """
 
 MAINTENANCE_ORG = """
@@ -257,13 +271,13 @@ OP %NAME% ha postato *[IL LINK AL TEMPLATE](%LINK%)*, Evviva!
 """
 
 
-def modify_template_op(link, name):
+def modify_template_op(link, name) -> str:
     return f"""---
 
 OP {name} ha postato *[IL LINK AL TEMPLATE]({link})*, Evviva!"""
 
 
-def modify_deploy_version(date):
+def modify_deploy_version(date) -> str:
     return f"""
 La versione corrente del bot è stata installata il `{date}`
 """
@@ -274,7 +288,7 @@ Template postato con successo! Grazie per aver reso /r/BancaDelMeme un posto mig
 """
 
 
-def modify_sell_investment(num_investments, taxes):
+def modify_sell_investment(num_investments, taxes) -> str:
     if num_investments < 1:
         return "Nessun investimento attivo trovato in questo post"
     params = {"il": "l", "agg": "o", "verb": "è", "tuo": "", "verr": "à"}
@@ -291,7 +305,7 @@ A breve i{il} comment{agg} verr{verr} aggiornat{agg} con il risultato.
     )
 
 
-def modify_oc_return(profit):
+def modify_oc_return(profit) -> str:
     return f"""\n\n---\n\nGrazie del tuo OC!  
 Per premiarti ti è stato accreditato un bonus
 pari all'1% degli investimenti (non tuoi) su questo post.
@@ -299,7 +313,7 @@ pari all'1% degli investimenti (non tuoi) su questo post.
 Hai guadagnato cosi {int(profit):,d} Mem€"""
 
 
-def modify_oc_capped():
+def modify_oc_capped() -> str:
     return """\n\n---\n\nGrazie del tuo OC!  
 Per premiarti ti è stato accreditato un bonus
 pari all'1% degli investimenti su questo post (ma non i tuoi).
@@ -312,7 +326,7 @@ Le future generazioni ti ricorderanno come titano degli investimenti.
 *"Alessandro pianse, poiché non c'erano altri mondi da conquistare.."""
 
 
-def cmd_sconosciuto():
+def cmd_sconosciuto() -> str:
     return """Non conosco il comando che mi hai inviato, il tuo messaggio è stato ignorato."""
 
 

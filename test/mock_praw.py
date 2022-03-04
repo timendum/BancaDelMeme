@@ -27,6 +27,10 @@ class Submission:
         self.url = ""
         self.mod = MagicMock()
 
+    @property
+    def subreddit(self):
+        return Subreddit()
+
     def __str__(self):
         return self.id
 
