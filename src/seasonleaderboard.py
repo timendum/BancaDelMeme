@@ -33,7 +33,7 @@ def main():
     # check for open Investment
     investments = sess.query(Investment).filter(Investment.done == 0).all()
     if investments:
-        print(f"Found {len(Investment)} active investments, stopping")
+        print(f"Found {len(investments)} active investments, stopping")
         return
 
     logging.info("Checks ok")
