@@ -59,16 +59,16 @@ def sigmoid_max(old):
     return MAX_A + MAX_B / ((old / MAX_C) + 1)
 
 
-MID_A = 70
-MID_B = 5000
-MID_M = 25000
+MID_A = 180
+MID_B = 10000
+MID_M = 20000
 
 
 def sigmoid_midpoint(old):
     return linear_interpolate(old, 0, MID_M, MID_A, MID_B)
 
 
-STEEP_A = 0.05
+STEEP_A = 0.1
 STEEP_C = 400
 
 
