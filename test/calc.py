@@ -83,7 +83,7 @@ class CalculatorTest(unittest.TestCase):
 
     def test_base(self):
         try:
-            investor0, _, _ = self.create_investment(100, 1, 100, "0")
+            investor0, _, _ = self.create_investment(100, 1, 1000, "0")
             investor1, _, _ = self.create_investment(100, 100, 100, "1")
             self.create_investment(100, 100, 169, "2")
             self.create_investment(100, -1, 100, "3")
@@ -99,8 +99,8 @@ class CalculatorTest(unittest.TestCase):
     def test_op(self):
         """Test profit greater for OP, same prameters"""
         try:
-            investor0, _, submission0 = self.create_investment(100, 1, 100, "op0")
-            investor1, _, submission1 = self.create_investment(100, 1, 100, "op1")
+            investor0, _, submission0 = self.create_investment(100, 1, 200, "op0")
+            investor1, _, submission1 = self.create_investment(100, 1, 200, "op1")
             # set investor = OP
             submission1.author = investor1
             self.calculator.main()
