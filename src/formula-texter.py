@@ -31,18 +31,16 @@ def find_threshold(fixed_b, min_a, max_a, target):
 
 def main():
     startings = [1, 10, 20, 50]
-    limit = 230
-    deltas = [2, 5, 10, 20]
-    threshs = [1, 1.25, 1.5, 2, 2.5]
-    min_n = 0
-    max_n = 1000
+    limit = 900
+    deltas = [5, 10, 20]
+    threshs = [1, 1.25, 1.5, 2, 2.6]
     print("Inizio | Fine | Totale | Rendimento")
     print("---|---|----|----")
     rets = set()
     for starting in startings:
         endings = list([d * starting for d in deltas])
         for t in threshs:
-            endings.append(find_threshold(starting, min_n, max_n, t))
+            endings.append(find_threshold(starting, 0, limit, t))
         endings = set([int(math.ceil(e)) for e in endings if e and e <= limit])
         endings = sorted(endings)
         for ending in endings:
