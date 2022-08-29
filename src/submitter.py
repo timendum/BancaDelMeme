@@ -43,6 +43,7 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         title = "Titolo: " + title
     text = "<a href='{}'>{}</a>".format(link, title)
     logging.info(" -- Posting %s", link)
+    msg = None
     if submission.domain == "i.redd.it" or submission.url.split(".")[-1] in (
         "png",
         "jpg",
@@ -56,11 +57,35 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
                 photo=submission.url,
             )
         except telegram.error.BadRequest:
-            tbot.sendMessage(chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text)
+            msg = tbot.sendMessage(
+                chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text
+            )
     else:
-        tbot.sendMessage(chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text)
-    conn.execute("INSERT INTO posts (id) values (?)", (submission.id,))
-    conn.commit()
+        msg = tbot.sendMessage(
+            chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text
+        )
+    if msg:
+        conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id))
+        conn.commit()
+
+
+def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Reddit):
+    c = conn.cursor()
+    rows = c.execute("SELECT rid, tid FROM posts ORDER BY rid desc limit 4")
+    deleted = []
+    for row in rows:
+        try:
+            post = reddit.submission(id=row[0])
+            if post.removed_by_category:
+                logging.info("Deleting %s", row[0])
+                tbot.deleteMessage(message_id=row[1], chat_id=config.TG_CHANNEL)
+                deleted.append(row[0])
+        except:
+            pass
+    for post in deleted:
+        conn.execute("DELETE FROM posts WHERE rid = ?", post)
+        conn.commit()
+    c.close()
 
 
 def post_reply(submission):
@@ -111,7 +136,7 @@ def main() -> None:
 
     logging.info("Setting up database")
     conn = sqlite3.connect(config.POST_DBFILE)
-    conn.execute("CREATE TABLE IF NOT EXISTS posts (id)")
+    conn.execute("CREATE TABLE IF NOT EXISTS posts (rid CHAR(10) PRIMARY KEY, tid CHAR(20))")
     conn.commit()
 
     logging.info("Setting up Telegram connection")
@@ -139,6 +164,7 @@ def main() -> None:
             logging.info("Termination signal received - exiting")
             break
         if not submission:
+            clean_removed(conn, tbot, reddit)
             # because of pause_after
             # to handle ctr+c above
             continue
@@ -149,11 +175,13 @@ def main() -> None:
         logging.info(" -- retrieved in %ss", duration)
 
         c = conn.cursor()
-        c.execute("SELECT * FROM posts WHERE id=?", (submission.id,))
+        c.execute("SELECT * FROM posts WHERE rid=?", (submission.id,))
         if c.fetchone():
             logging.info("Already processed")
+            c.close()
             continue
         post_telegram(conn, submission, tbot)
+        c.close()
 
         bot_reply = post_reply(submission)
 
