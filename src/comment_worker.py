@@ -457,6 +457,7 @@ class CommentWorker:
             return self._sconosciuto(comment)
         reply = reply_wrap(comment.submission, message.rimozione(rule))
         comment.submission.mod.remove()
+        comment.mod.remove()
         if reply and reply != "0":
             reply.mod.lock()
         logging.info(" -- removed post")
