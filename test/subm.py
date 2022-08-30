@@ -2,19 +2,19 @@ import sys
 
 sys.path.append("src")
 
-import unittest
 import sqlite3
+import unittest
+from unittest.mock import Mock
 
+import mock_praw
+import mock_telegram
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 import config
-import submitter
 import message
-from models import Investor, Investment
-import mock_praw
-import mock_telegram
-from unittest.mock import Mock
+import submitter
+from models import Investment, Investor
 
 
 class SubmitterTest(unittest.TestCase):

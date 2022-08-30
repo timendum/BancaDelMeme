@@ -183,8 +183,8 @@ def main() -> None:
             logging.info("Already processed")
             c.close()
             continue
-        post_telegram(conn, submission, tbot)
         c.close()
+        post_telegram(conn, submission, tbot)
 
         bot_reply = post_reply(submission)
 
