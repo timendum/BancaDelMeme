@@ -86,7 +86,7 @@ def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Red
             logging.critical("Telegram error!")
             return
     for post in deleted:
-        conn.execute("DELETE FROM posts WHERE rid = ?", post)
+        conn.execute("DELETE FROM posts WHERE rid = ?", (post))
         conn.commit()
     c.close()
 
