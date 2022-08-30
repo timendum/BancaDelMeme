@@ -6,8 +6,9 @@ import matplotlib.gridspec as gridspec
 
 import formula
 
+
 def main():
-    fig = plt.figure(figsize=(15,15))
+    fig = plt.figure(figsize=(15, 15))
 
     # Lay out the figure as a grid of subplots
     gridspec.GridSpec(6, 2)
@@ -29,18 +30,18 @@ def main():
             if n > o:
                 x.append(n)
                 y.append(formula.calculate(n, o))
-        xy.append([x,y])
+        xy.append([x, y])
 
     for (x, y) in xy:
         plt.plot(x, y)
 
-    ax.grid(color='k', alpha=0.15, which='major')
+    ax.grid(color="k", alpha=0.15, which="major")
     ax.set_ylim([0, 3])
 
     plt.legend(list(olds))
-    plt.title('Return factor')
-    plt.xlabel('new')
-    plt.ylabel('calculate(new, old)')
+    plt.title("Return factor")
+    plt.xlabel("new")
+    plt.ylabel("calculate(new, old)")
 
     # ---GRAPH B---
     # Plotting return curve for small olds only
@@ -59,18 +60,18 @@ def main():
             if n > o:
                 x.append(n)
                 y.append(formula.calculate(n, o))
-        xy.append([x,y])
+        xy.append([x, y])
 
     for (x, y) in xy:
         plt.plot(x, y)
 
-    ax.grid(color='k', alpha=0.15, which='major')
+    ax.grid(color="k", alpha=0.15, which="major")
     ax.set_ylim([0, 3])
 
     plt.legend(list(olds))
-    plt.title('Return factor')
-    plt.xlabel('new')
-    plt.ylabel('calculate(new, old)')
+    plt.title("Return factor")
+    plt.xlabel("new")
+    plt.ylabel("calculate(new, old)")
 
     # ---GRAPH C.1---
     # Plotting sigmoid_max
@@ -88,11 +89,11 @@ def main():
 
     plt.plot(x, y)
 
-    ax.grid(color='k', alpha=0.15, which='major')
+    ax.grid(color="k", alpha=0.15, which="major")
     ax.set_ylim([0, 5.5])
 
-    plt.title('sigmoid_max(old)')
-    plt.xlabel('old')
+    plt.title("sigmoid_max(old)")
+    plt.xlabel("old")
 
     # ---GRAPH C.2:---
     # Plotting sigmoid_midpoint
@@ -110,10 +111,10 @@ def main():
 
     plt.plot(x, y)
 
-    ax.grid(color='k', alpha=0.15, which='major')
+    ax.grid(color="k", alpha=0.15, which="major")
 
-    plt.title('sigmoid_midpoint(old)')
-    plt.xlabel('old')
+    plt.title("sigmoid_midpoint(old)")
+    plt.xlabel("old")
 
     # ---GRAPH C.3---
     # Plotting sigmoid_steepness
@@ -131,10 +132,10 @@ def main():
 
     plt.plot(x, y)
 
-    ax.grid(color='k', alpha=0.15, which='major')
+    ax.grid(color="k", alpha=0.15, which="major")
 
-    plt.title('sigmoid_steepness(old)')
-    plt.xlabel('old')
+    plt.title("sigmoid_steepness(old)")
+    plt.xlabel("old")
 
     # ---GRAPH D---
     # Plotting return multiplier thresholds
@@ -184,11 +185,11 @@ def main():
     # to compare results against the new version.
     def find_threshold_old(f, fixed_b, min_a, max_a, target):
         for a in range(min_a, max_a, 1):
-                if a > fixed_b:
-                    multA = formula.calculate(a, fixed_b)
-                    multB = formula.calculate(a+1, fixed_b)
-                    if multA < target and multB >= target:
-                        return a
+            if a > fixed_b:
+                multA = formula.calculate(a, fixed_b)
+                multB = formula.calculate(a + 1, fixed_b)
+                if multA < target and multB >= target:
+                    return a
         return None
 
     # Bottom right subplot
@@ -214,25 +215,25 @@ def main():
                 x.append(o)
                 x2.append(o)
                 y.append(n)
-                y2.append(n-o)
+                y2.append(n - o)
 
-        xy.append([x,y])
-        x2y2.append([x2,y2])
+        xy.append([x, y])
+        x2y2.append([x2, y2])
 
     for (x, y) in x2y2:
         plt.plot(x, y)
 
-    ax.legend(['break-even','1.25x','1.5x','x2','x3','x4','x5'])
-    plt.grid(color='k', alpha=0.15, which='major')
-    plt.title('1-2 Factor thresholds')
-    plt.xlabel('old')
-    plt.ylabel('delta')
-    
+    ax.legend(["break-even", "1.25x", "1.5x", "x2", "x3", "x4", "x5"])
+    plt.grid(color="k", alpha=0.15, which="major")
+    plt.title("1-2 Factor thresholds")
+    plt.xlabel("old")
+    plt.ylabel("delta")
 
     plt.tight_layout()
     fig.set_size_inches(18, 18)
-    fig.savefig('all_plot.png')
+    fig.savefig("all_plot.png")
     # plt.show()
+
 
 if __name__ == "__main__":
     main()

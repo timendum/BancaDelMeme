@@ -91,17 +91,17 @@ def keep_up(function):
 
 def formatNumber(n):
     """Format Mem€ in a short format"""
-    suffixes = {6: 'M', 9: 'B', 12: 'T', 15: 'Q', 18: 'E'}
+    suffixes = {6: "M", 9: "B", 12: "T", 15: "Q", 18: "E"}
     digits = len(str(n))
     if digits <= 6:
-        return '{:,}'.format(n)
+        return "{:,}".format(n)
     exponent = (digits - 1) - ((digits - 1) % 3)
     mantissa = n / (10**exponent)
     suffix = suffixes.get(exponent)
-    return '{:.2f}{}'.format(mantissa, suffix)
+    return "{:.2f}{}".format(mantissa, suffix)
 
 
-class EmptyResponse():
+class EmptyResponse:
     """Mock up of reddit message"""
 
     def __init__(self):

@@ -3,11 +3,13 @@ time is used to record time
 """
 import time
 
-class Stopwatch():
+
+class Stopwatch:
     """
     The class is pretty self-explanatory. This is a class that
     lets us to record time in a convenient way
     """
+
     def __init__(self):
         self.reset()
         self.previous_time = -1

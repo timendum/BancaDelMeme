@@ -110,4 +110,4 @@ def net_worth_coefficient(net_worth, top_networth=0) -> float:
         net_worth = max(1, net_worth * 100 / top_networth)
         # il fattore è pre-calcolato rispetto ad un massimo di 100
         factor = 0.4217397848287947  # math.log(6, 100 * 0.7)
-    return (net_worth ** -factor) * 6
+    return (net_worth**-factor) * 6

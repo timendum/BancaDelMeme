@@ -17,7 +17,7 @@ RATES = [0, 23, 27, 38, 41, 43]
 # Rates from https://it.wikipedia.org/wiki/Imposta_sul_reddito_delle_persone_fisiche
 
 
-class TaxCollector():
+class TaxCollector:
     def __init__(self):
         engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
         session_maker = sessionmaker(bind=engine)
@@ -38,9 +38,7 @@ class TaxCollector():
         """Collect taxes"""
         logging.info("Fetching investors...")
         stopwatch = Stopwatch()
-        investors = self.sess.query(Investor).\
-            filter(Investor.completed > 0).\
-            all()
+        investors = self.sess.query(Investor).filter(Investor.completed > 0).all()
         duration = stopwatch.measure()
         logging.info("Investors : %d", len(investors))
         logging.info(" -- fetched in %ss", duration)
@@ -60,7 +58,7 @@ class TaxCollector():
         logging.info(" -- committed in %ss", duration)
 
     def calc_tiers(self):
-        """"Calculate tiers and basics taxes"""
+        """ "Calculate tiers and basics taxes"""
         top_tier_amunt = self.top_tier()
         logging.info("Top 1%% : %f", top_tier_amunt)
         deltas = (top_tier_amunt - NO_TAX) / (len(RATES) - 2)
@@ -80,26 +78,32 @@ class TaxCollector():
         self.tiers = tiers
 
     def top_tier(self):
-        """"Return the minimum amount to be in the top 1% of networth"""
+        """ "Return the minimum amount to be in the top 1% of networth"""
         num_investors = self.sess.query(Investor).filter(Investor.completed != 0).count()
-        top_users = self.sess.query(
-            Investor.name,
-            (func.coalesce(func.sum(Investment.amount), 0) + Investor.balance).label('networth')).\
-            outerjoin(Investment, and_(Investor.name == Investment.name, Investment.done == 0)).\
-            group_by(Investor.name).\
-            order_by(desc('networth')).\
-            limit(round(num_investors/100)).\
-            all()
+        top_users = (
+            self.sess.query(
+                Investor.name,
+                (func.coalesce(func.sum(Investment.amount), 0) + Investor.balance).label(
+                    "networth"
+                ),
+            )
+            .outerjoin(Investment, and_(Investor.name == Investment.name, Investment.done == 0))
+            .group_by(Investor.name)
+            .order_by(desc("networth"))
+            .limit(round(num_investors / 100))
+            .all()
+        )
         return top_users[-1][1]
 
     def get_networth(self, investor):
         """Return the balance + invested amount"""
-        investments = self.sess.query(Investment, \
-                func.sum(Investment.amount)).\
-                filter(Investment.done == 0).\
-                filter(Investment.name == investor.name).\
-                group_by(Investment.name).\
-                first()
+        investments = (
+            self.sess.query(Investment, func.sum(Investment.amount))
+            .filter(Investment.done == 0)
+            .filter(Investment.name == investor.name)
+            .group_by(Investment.name)
+            .first()
+        )
         if not investments:
             return investor.balance
         return investor.balance + investments[1]

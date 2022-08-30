@@ -117,7 +117,7 @@ class CommentWorker:
         "i.imgflip.com",
         "i.kym-cdn.com",
     ]
-    template_sources = [fr"https://{re.escape(website)}\S+" for website in websites]
+    template_sources = [rf"https://{re.escape(website)}\S+" for website in websites]
     commands = [
         r"!attivi",
         r"!saldo",
