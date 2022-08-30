@@ -50,7 +50,7 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         "jpeg",
     ):
         try:
-            tbot.sendPhoto(
+            msg = tbot.sendPhoto(
                 chat_id=config.TG_CHANNEL,
                 parse_mode=telegram.ParseMode.HTML,
                 caption=text,
@@ -80,8 +80,11 @@ def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Red
                 logging.info("Deleting %s", row[0])
                 tbot.deleteMessage(message_id=row[1], chat_id=config.TG_CHANNEL)
                 deleted.append(row[0])
-        except:
-            pass
+        except telegram.error.TelegramError as e_teleg:
+            c.close()
+            logging.error(e_teleg)
+            logging.critical("Telegram error!")
+            return
     for post in deleted:
         conn.execute("DELETE FROM posts WHERE rid = ?", post)
         conn.commit()
