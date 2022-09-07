@@ -1,3 +1,4 @@
+from operator import attrgetter
 import time
 from unittest.mock import MagicMock
 
@@ -33,6 +34,14 @@ class Submission:
 
     def __str__(self):
         return self.id
+
+    @property
+    def removed_by_category(self):
+        if self.removed:
+            return "moderator"
+        if not self.author:
+            return "deleted"
+        return None
 
     def reply_wrap(self, body):
         comment = Comment(self.id + "/r", "replyer", body, self)
