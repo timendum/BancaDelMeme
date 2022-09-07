@@ -109,8 +109,12 @@ def main():
         factor = formula.calculate(upvotes_now, investment.upvotes, net_worth, top_networth)
 
         if factor > 1 and post.author and investor.name == post.author.name:
-            # bonus per OP
+            # bonus to OP
             factor *= formula.OP_BONUS
+
+        if factor < 1 and post.removed_by_category == "moderator":
+            # for removed posts
+            factor = 1
 
         amount = investment.amount
         balance = investor.balance

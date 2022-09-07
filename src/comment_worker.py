@@ -431,7 +431,7 @@ class CommentWorker:
 
         taxes = 0
         for investment in investments:
-            if comment.submission.author and not comment.submission.removed:
+            if comment.removed_by_category:
                 # no taxes on deleted submissions
                 remaining = config.INVESTMENT_DURATION - int(time.time()) + investment.time
                 tax = min(99, pow(remaining / 60 / 60, 1.5)) / 100  # (1% every hour)^1.5 - max 99%
