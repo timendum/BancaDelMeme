@@ -448,14 +448,19 @@ class CommentWorker:
     def investitutto(self, sess, comment, investor):
         self.investi(sess, comment, str(investor.balance), None)
 
-    def rimuovi(self, sess, comment, rule):
+    def rimuovi(self, _, comment, rule):
         if not comment.author:
             logging.info(" -- no author")
             return
         if comment.author.name not in config.ADMIN_ACCOUNTS:
             logging.info(" -- not admin")
             return self._sconosciuto(comment)
-        reply = reply_wrap(comment.submission, message.rimozione(rule))
+        extra = None
+        try:
+            extra = comment.subreddit.rules()['rules'][int(rule)]['violation_reason']
+        except:
+            pass
+        reply = reply_wrap(comment.submission, message.rimozione(rule, extra))
         comment.submission.mod.remove()
         comment.mod.remove()
         if reply and reply != "0":

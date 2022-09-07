@@ -330,9 +330,10 @@ def cmd_sconosciuto() -> str:
     return """Non conosco il comando che mi hai inviato, il tuo messaggio è stato ignorato."""
 
 
-def rimozione(rule) -> str:
+def rimozione(rule, extra) -> str:
+    extra = "" or (": " + extra)
     return f"""Il tuo post è stato rimosso
-perché non rispetta la regola {rule}.
+perché non rispetta la regola {rule}{extra}.
 
 Controlla [le regole](/r/BancaDelMeme/about/rules/), sono poche ma importanti.  
 Se hai dubbi [contattaci](/message/compose/?to=/r/BancaDelMeme)."""
