@@ -457,7 +457,7 @@ class CommentWorker:
             return self._sconosciuto(comment)
         extra = None
         try:
-            extra = comment.subreddit.rules()['rules'][int(rule)]['violation_reason']
+            extra = comment.subreddit.rules()['rules'][int(rule)+1]['violation_reason']
         except:
             pass
         reply = reply_wrap(comment.submission, message.rimozione(rule, extra))
