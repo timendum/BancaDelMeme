@@ -26,11 +26,11 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 import config
 import message
-from utils import create_engine, keep_up, test_reddit_connection
 from comment_worker import reply_wrap
 from kill_handler import KillHandler
 from models import Buyable
 from stopwatch import Stopwatch
+from utils import create_engine, keep_up, make_reddit, test_reddit_connection
 
 praw.models.Submission.reply_wrap = reply_wrap
 logging.basicConfig(level=logging.INFO)
@@ -129,13 +129,7 @@ def main() -> None:
     engine = create_engine()
     sess_maker = scoped_session(sessionmaker(bind=engine))
 
-    reddit = praw.Reddit(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        username=config.USERNAME,
-        password=config.PASSWORD,
-        user_agent=config.USER_AGENT,
-    )
+    reddit = make_reddit()
 
     logging.info("Setting up database")
     conn = sqlite3.connect(config.POST_DBFILE)

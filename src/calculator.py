@@ -3,7 +3,7 @@ import logging
 import time
 
 import praw
-from sqlalchemy import func, and_, desc
+from sqlalchemy import and_, desc, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -14,7 +14,7 @@ import utils
 from kill_handler import KillHandler
 from models import Investment, Investor
 from stopwatch import Stopwatch
-from utils import BALANCE_CAP, EmptyResponse, edit_wrap, create_engine
+from utils import BALANCE_CAP, EmptyResponse, create_engine, edit_wrap
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,13 +29,7 @@ def main():
     engine = create_engine()
     session_maker = sessionmaker(bind=engine)
 
-    reddit = praw.Reddit(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        username=config.USERNAME,
-        password=config.PASSWORD,
-        user_agent=config.USER_AGENT,
-    )
+    reddit = utils.make_reddit()
 
     # We will test our reddit connection here
     if not utils.test_reddit_connection(reddit):

@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 import config
 from models import Investment, Investor
-from utils import formatNumber, create_engine, test_reddit_connection
+from utils import create_engine, formatNumber, make_reddit, test_reddit_connection
 
 logging.basicConfig(level=logging.INFO)
 localtime = time.strftime("{%Y-%m-%d %H:%M:%S}")
@@ -65,13 +65,7 @@ def main():
     engine = create_engine()
     session_maker = sessionmaker(bind=engine)
 
-    reddit = praw.Reddit(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        username=config.USERNAME,
-        password=config.PASSWORD,
-        user_agent=config.USER_AGENT,
-    )
+    reddit = make_reddit()
 
     # We will test our reddit connection here
     if not config.TEST and not test_reddit_connection(reddit):

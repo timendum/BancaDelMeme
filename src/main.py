@@ -26,7 +26,7 @@ from comment_worker import CommentWorker
 from kill_handler import KillHandler
 from models import Base
 from stopwatch import Stopwatch
-from utils import keep_up, test_reddit_connection
+from utils import keep_up, make_reddit, test_reddit_connection
 
 logging.basicConfig(level=logging.INFO)
 
@@ -59,13 +59,7 @@ def main():
 
     logging.info("Setting up Reddit connection")
 
-    reddit = praw.Reddit(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        username=config.USERNAME,
-        password=config.PASSWORD,
-        user_agent=config.USER_AGENT,
-    )
+    reddit = make_reddit()
 
     # We will test our reddit connection here
     if not test_reddit_connection(reddit):
