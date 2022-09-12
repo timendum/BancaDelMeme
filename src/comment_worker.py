@@ -17,13 +17,7 @@ from models import Investment, Investor
 REDDIT = None
 
 if not config.TEST:
-    REDDIT = praw.Reddit(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        username=config.USERNAME,
-        password=config.PASSWORD,
-        user_agent=config.USER_AGENT,
-    )
+    REDDIT = utils.make_reddit()
 
 
 # Decorator to mark a commands that require a user
@@ -457,8 +451,8 @@ class CommentWorker:
             return self._sconosciuto(comment)
         extra = None
         try:
-            extra = comment.subreddit.rules()['rules'][int(rule)+1]['violation_reason']
-        except:
+            extra = comment.subreddit.rules()["rules"][int(rule) - 1]["violation_reason"]
+        except (IndexError, KeyError, ValueError):
             pass
         reply = reply_wrap(comment.submission, message.rimozione(rule, extra))
         comment.submission.mod.remove()

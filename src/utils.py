@@ -9,6 +9,7 @@ import traceback
 import logging
 import time
 
+import praw
 import prawcore
 from sqlalchemy import create_engine as __create_engine
 
@@ -57,7 +58,7 @@ def investment_duration_string(duration) -> str:
     return inv_string
 
 
-def test_reddit_connection(reddit):
+def test_reddit_connection(reddit) -> bool:
     """
     This function just tests connection to reddit
     Many things can happen:
@@ -79,7 +80,7 @@ def test_reddit_connection(reddit):
     return True
 
 
-def keep_up(function):
+def keep_up(function) -> None:
     """Log exceptions and execute the function again."""
     while True:
         try:
@@ -89,7 +90,7 @@ def keep_up(function):
             time.sleep(60)
 
 
-def formatNumber(n):
+def formatNumber(n) -> str:
     """Format Mem€ in a short format"""
     suffixes = {6: "M", 9: "B", 12: "T", 15: "Q", 18: "E"}
     digits = len(str(n))
@@ -139,3 +140,13 @@ def edit_wrap(self, body):
 
 def create_engine():
     return __create_engine(config.DB)
+
+
+def make_reddit() -> praw.Reddit:
+    return praw.Reddit(
+        client_id=config.CLIENT_ID,
+        client_secret=config.CLIENT_SECRET,
+        username=config.USERNAME,
+        password=config.PASSWORD,
+        user_agent=config.USER_AGENT,
+    )
