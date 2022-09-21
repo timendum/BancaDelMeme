@@ -97,21 +97,7 @@ class CommentWorker:
         "q": int(1e15),
         "%": "%",
     }
-
-    # Allowed websites for !template command
-    websites = [
-        "imgur.com",
-        "i.imgur.com",
-        "m.imgur.com",
-        "reddit.com",
-        "i.reddit.com",
-        "v.reddit.com",
-        "i.redd.it",
-        "v.redd.it",
-        "i.imgflip.com",
-        "i.kym-cdn.com",
-    ]
-    template_sources = [rf"https://{re.escape(website)}\S+" for website in websites]
+    template_sources = r"https?://\S+"
     commands = [
         r"!attivi",
         r"!saldo",
@@ -125,9 +111,8 @@ class CommentWorker:
         r"!mercato",
         r"!top",
         r"!versione",
-        r"!assegna\s+(\S+)\s+(\S+)",
-        r"!template\s+(%s)" % "|".join(template_sources),
-        r"!template\s+\[(%s)\]\(\1\)" % "|".join(template_sources),
+        r"!template\s+(https://\S+)",
+        r"!template\s+\[(https://\S+)\]\(\1\)",
         r"!vendi",
         r"!investitutto",
         r"!rimuovi\s+(\d)",
