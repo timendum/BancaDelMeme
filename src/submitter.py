@@ -81,10 +81,8 @@ def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Red
                 deleted.append(row[0])
                 tbot.deleteMessage(message_id=row[1], chat_id=config.TG_CHANNEL)
         except telegram.error.TelegramError as e_teleg:
-            c.close()
             logging.error(e_teleg)
             logging.critical("Telegram error!")
-            return
     for post in deleted:
         conn.execute("DELETE FROM posts WHERE rid = ?", (post))
         conn.commit()
