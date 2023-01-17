@@ -17,4 +17,4 @@ class Bot:
 
 
 error = _telegram.error
-ParseMode = _telegram.ParseMode
+constants = _telegram.constants

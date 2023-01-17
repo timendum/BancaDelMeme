@@ -1,4 +1,4 @@
-praw
+praw>=7.6.1
 fastnumbers
 sqlalchemy
-python-telegram-bot
+python-telegram-bot>=20

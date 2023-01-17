@@ -22,6 +22,7 @@ import urllib.parse
 
 import praw
 import telegram
+from telegram.constants import ParseMode
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 import config
@@ -30,7 +31,7 @@ from comment_worker import reply_wrap
 from kill_handler import KillHandler
 from models import Buyable
 from stopwatch import Stopwatch
-from utils import create_engine, keep_up, make_reddit, test_reddit_connection
+from utils import create_engine, keep_up, make_reddit, test_reddit_connection, waint_async
 
 praw.models.Submission.reply_wrap = reply_wrap
 logging.basicConfig(level=logging.INFO)
@@ -50,20 +51,20 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         "jpeg",
     ):
         try:
-            msg = tbot.sendPhoto(
+            msg = waint_async(lambda: tbot.send_photo(
                 chat_id=config.TG_CHANNEL,
-                parse_mode=telegram.ParseMode.HTML,
+                parse_mode=ParseMode.HTML,
                 caption=text,
                 photo=submission.url,
-            )
+            ))
         except telegram.error.BadRequest:
-            msg = tbot.sendMessage(
-                chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text
-            )
+            msg = waint_async(lambda: tbot.send_message(
+                chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
+            ))
     else:
-        msg = tbot.sendMessage(
-            chat_id=config.TG_CHANNEL, parse_mode=telegram.ParseMode.HTML, text=text
-        )
+        msg = waint_async(lambda: tbot.send_message(
+            chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
+        ))
     if msg:
         conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id))
         conn.commit()
@@ -79,7 +80,7 @@ def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Red
             if post.removed_by_category:
                 logging.info("Deleting %s", row[0])
                 deleted.append(row[0])
-                tbot.deleteMessage(message_id=row[1], chat_id=config.TG_CHANNEL)
+                _ = tbot.delete_message(message_id=row[1], chat_id=config.TG_CHANNEL)
         except telegram.error.TelegramError as e_teleg:
             logging.error(e_teleg)
             logging.critical("Telegram error!")
@@ -137,7 +138,8 @@ def main() -> None:
     logging.info("Setting up Telegram connection")
     tbot = telegram.Bot(token=config.TG_TOKEN)
     try:
-        tbot.get_me()
+        _ = waint_async(lambda: tbot.get_me())
+        print(_)
     except telegram.error.TelegramError as e_teleg:
         logging.error(e_teleg)
         logging.critical("Telegram error!")

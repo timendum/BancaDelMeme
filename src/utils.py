@@ -5,9 +5,11 @@ logging is the general stdout for us
 
 prawcore has the list of praw exceptions
 """
+import asyncio
 import traceback
 import logging
 import time
+from typing import Callable, TypeVar
 
 import praw
 import prawcore
@@ -120,7 +122,7 @@ def edit_wrap(self, body):
 
     if config.POST_TO_REDDIT:
         try:
-            return self.edit(body)
+            return self.edit(body=body)
         # TODO: get rid of this broad except
         except Exception as e:
             logging.error(e)
@@ -128,7 +130,7 @@ def edit_wrap(self, body):
             logging.info(" -- 2nd try in 30 seconds")
             time.sleep(30)
             try:
-                return self.edit(body)
+                return self.edit(body=body)
             except Exception as e:
                 logging.error(e)
                 traceback.print_exc()
@@ -150,3 +152,9 @@ def make_reddit() -> praw.Reddit:
         password=config.PASSWORD,
         user_agent=config.USER_AGENT,
     )
+
+
+def waint_async(funct):
+    loop = asyncio.get_event_loop()
+    coroutine = funct()
+    return loop.run_until_complete(coroutine)

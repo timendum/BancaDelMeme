@@ -168,11 +168,11 @@ Ultimo aggiornamento: {localtime}
             logging.info("Updated sidebar: %s", subreddit)
             # wiki full poster
             wikipage = sub.wiki["leaderboardocbig"]
-            wikipage.edit(format_posters_full(top_poster, 100))
+            wikipage.edit(content=format_posters_full(top_poster, 100))
             logging.info("Updated wiki poster: %s", subreddit)
             # wiki full investor
             wikipage = sub.wiki["leaderboardbig"]
-            wikipage.edit(format_investor(top_users, 500))
+            wikipage.edit(content=format_investor(top_users, 500))
             logging.info("Updated wiki investor: %s", subreddit)
 
     # Report the Reddit API call stats
