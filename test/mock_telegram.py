@@ -8,10 +8,10 @@ class Bot:
     def __init__(self, token, **_):
         self.posts = []
 
-    def get_me(self, **_):
-        pass
+    async def get_me(self, **_):
+        return None
 
-    def sendMessage(self, chat_id, text, parse_mode=None, **_):
+    async def send_message(self, chat_id, text, parse_mode=None, **_):
         self.posts.append(text)
         return MagicMock(message_id=1)
 
