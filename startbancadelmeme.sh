@@ -3,10 +3,11 @@ set -Eeuo pipefail
 script_dir=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 cd $script_dir
 
-screen -S mememain -X quit
-screen -S memesub -X quit
-screen -S memecalc -X quit
-screen -S memeteleg -X quit
+trap "screen -S mememain -X quit" INT QUIT
+trap "screen -S memesub -X quit" INT QUIT
+trap "screen -S memecalc -X quit" INT QUIT
+trap "screen -S memeteleg -X quit" INT QUIT
+
 
 # crontab
 # cd ~/bancaDelMeme/src && ../bin/python buyabler.py
