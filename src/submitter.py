@@ -51,20 +51,26 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         "jpeg",
     ):
         try:
-            msg = waint_async(lambda: tbot.send_photo(
-                chat_id=config.TG_CHANNEL,
-                parse_mode=ParseMode.HTML,
-                caption=text,
-                photo=submission.url,
-            ))
+            msg = waint_async(
+                lambda: tbot.send_photo(
+                    chat_id=config.TG_CHANNEL,
+                    parse_mode=ParseMode.HTML,
+                    caption=text,
+                    photo=submission.url,
+                )
+            )
         except telegram.error.BadRequest:
-            msg = waint_async(lambda: tbot.send_message(
-                chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
-            ))
+            msg = waint_async(
+                lambda: tbot.send_message(
+                    chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
+                )
+            )
     else:
-        msg = waint_async(lambda: tbot.send_message(
-            chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
-        ))
+        msg = waint_async(
+            lambda: tbot.send_message(
+                chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
+            )
+        )
     if msg:
         conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id))
         conn.commit()
@@ -80,12 +86,14 @@ def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Red
             if post.removed_by_category:
                 logging.info("Deleting %s", row[0])
                 deleted.append(row[0])
-                _ = tbot.delete_message(message_id=row[1], chat_id=config.TG_CHANNEL)
+                waint_async(
+                    lambda: tbot.delete_message(message_id=row[1], chat_id=config.TG_CHANNEL)
+                )
         except telegram.error.TelegramError as e_teleg:
             logging.error(e_teleg)
             logging.critical("Telegram error!")
     for post in deleted:
-        conn.execute("DELETE FROM posts WHERE rid = ?", (post, ))
+        conn.execute("DELETE FROM posts WHERE rid = ?", (post,))
         conn.commit()
     c.close()
 

@@ -155,6 +155,6 @@ def make_reddit() -> praw.Reddit:
 
 
 def waint_async(funct):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     coroutine = funct()
     return loop.run_until_complete(coroutine)

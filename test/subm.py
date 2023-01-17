@@ -64,3 +64,13 @@ class SubmitterTest(unittest.TestCase):
         self.submitter.main()
         replies = submission.replies
         self.assertEqual(len(replies), 1)
+
+    def test_deleted(self):
+        subreddit = self.reddit.subreddit()
+        submission = subreddit.stream.submissions()[0]
+        self.submitter.main()
+        subreddit.stream.submissions = lambda pause_after : [None]
+        self.reddit.submissions[submission.id] = submission
+        submission.removed = True
+        self.submitter.main()
+        self.assertEqual(len(self.submitter.telegram.deleted), 1)
