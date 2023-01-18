@@ -78,7 +78,7 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
 
 def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Reddit):
     c = conn.cursor()
-    rows = c.execute("SELECT rid, tid FROM posts ORDER BY rid desc limit 4")
+    rows = c.execute("SELECT rid, tid FROM posts ORDER BY length(rid) desc, rid desc limit 4")
     deleted = []
     for row in rows:
         try:
