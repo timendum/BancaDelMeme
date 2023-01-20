@@ -97,7 +97,7 @@ def main():
     FROM "Buyables"
     WHERE done = 1
     GROUP BY name
-    ORDER BY coc DESC, soc DESC
+    ORDER BY soc DESC, coc DESC
     LIMIT :limit""",
         {"limit": 100},
     ).fetchall()
