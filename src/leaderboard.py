@@ -43,7 +43,7 @@ def format_posters_small(users, limit=500) -> str:
     text = ".|Autore|#OC|Karma|\n"
     text += ":-:|:-:|:-:|:-:\n"
     for i, user in enumerate(users):
-        text += f"{i + 1}|/u/{user[0]}|{user[1]}|{user[2]}\n"
+        text += f"{i + 1}|/u/{user[0]}|{formatNumber(user[1])}|{formatNumber(user[2])}\n"
         if i + 1 >= limit:
             break
     return text
