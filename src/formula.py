@@ -50,7 +50,7 @@ def sigmoid(x, maxvalue, midpoint, steepness):
     return y
 
 
-MAX_A = 2.6
+MAX_A = 2.5
 MAX_B = 0
 MAX_C = 30
 
@@ -109,5 +109,5 @@ def net_worth_coefficient(net_worth, top_networth=0) -> float:
         # normalizzo il rapporto tra patrimonio e massimo in 100esimi
         net_worth = max(1, net_worth * 100 / top_networth)
         # il fattore è pre-calcolato rispetto ad un massimo di 100
-        factor = 0.4217397848287947  # math.log(6, 100 * 0.7)
+        factor = 0.43246468858824433  # math.log(6, 90 * 0.7)
     return (net_worth**-factor) * 6
