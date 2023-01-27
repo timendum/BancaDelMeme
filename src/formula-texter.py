@@ -11,11 +11,15 @@ def find_threshold(fixed_b, min_a, max_a, target):
         # print("Reached base case")
 
         v = calculate(min_a, fixed_b)
-        # print(f"v: {v}")
+        if v > target:
+            # v = calculate(max_a, fixed_b)
+            # print(f"v: {v} - {max_a}")
+            return min_a
 
-        return min_a
+        # print(f"v: {v} - {min_a}")
+        return max_a
 
-    mid_a = (max_a + min_a) / 2
+    mid_a = int((max_a + min_a) / 2)
     # print(f"mid: {mid_a}")
 
     v = calculate(mid_a, fixed_b)
@@ -33,7 +37,7 @@ def main():
     startings = [1, 10, 20, 50]
     limit = 900
     deltas = [5, 10, 20]
-    threshs = [1, 1.25, 1.5, 2, 2.6]
+    threshs = [1, 1.25, 1.5, 2, 2.4]
     print("Inizio | Fine | Totale | Rendimento")
     print("---|---|----|----")
     rets = set()
