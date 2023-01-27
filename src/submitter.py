@@ -51,8 +51,7 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         "jpeg",
     ):
         try:
-            msg = waint_async(
-                lambda: tbot.send_photo(
+            msg = waint_async(tbot.send_photo(
                     chat_id=config.TG_CHANNEL,
                     parse_mode=ParseMode.HTML,
                     caption=text,
@@ -60,14 +59,12 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
                 )
             )
         except telegram.error.BadRequest:
-            msg = waint_async(
-                lambda: tbot.send_message(
+            msg = waint_async(tbot.send_message(
                     chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
                 )
             )
     else:
-        msg = waint_async(
-            lambda: tbot.send_message(
+        msg = waint_async(tbot.send_message(
                 chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
             )
         )
@@ -86,9 +83,7 @@ def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Red
             if post.removed_by_category:
                 logging.info("Deleting %s", row[0])
                 deleted.append(row[0])
-                waint_async(
-                    lambda: tbot.delete_message(message_id=row[1], chat_id=config.TG_CHANNEL)
-                )
+                waint_async(tbot.delete_message(message_id=row[1], chat_id=config.TG_CHANNEL))
         except telegram.error.TelegramError as e_teleg:
             logging.error(e_teleg)
             logging.critical("Telegram error!")
@@ -146,7 +141,7 @@ def main() -> None:
     logging.info("Setting up Telegram connection")
     tbot = telegram.Bot(token=config.TG_TOKEN)
     try:
-        _ = waint_async(lambda: tbot.get_me())
+        _ = waint_async(tbot.get_me())
         print(_)
     except telegram.error.TelegramError as e_teleg:
         logging.error(e_teleg)
@@ -186,7 +181,10 @@ def main() -> None:
             c.close()
             continue
         c.close()
-        post_telegram(conn, submission, tbot)
+        try:
+            post_telegram(conn, submission, tbot)
+        except Exception:
+            logging.error("Error with telegram")
 
         bot_reply = post_reply(submission)
 
