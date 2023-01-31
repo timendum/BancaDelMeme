@@ -71,10 +71,6 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
     if msg:
         conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id))
         conn.commit()
-    else:
-        logging.error("Not posted on Telegram: %s", submission.id)
-        conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, None))
-        conn.commit()
 
 
 def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Reddit):
@@ -192,7 +188,9 @@ def main() -> None:
         try:
             post_telegram(conn, submission, tbot)
         except Exception:
-            logging.error("Error with telegram")
+            logging.error("Not posted on Telegram: %s", submission.id)
+            conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, None))
+            conn.commit()
 
         bot_reply = post_reply(submission)
 
