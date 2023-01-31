@@ -71,11 +71,19 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
     if msg:
         conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id))
         conn.commit()
+    else:
+        logging.error("Not posted on Telegram: %s", submission.id)
+        conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, None))
+        conn.commit()
 
 
 def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Reddit):
     c = conn.cursor()
-    rows = c.execute("SELECT rid, tid FROM posts ORDER BY length(rid) desc, rid desc limit 4")
+    rows = c.execute("""SELECT rid, tid
+                        FROM posts
+                        WHERE tid IS NOT NULL
+                        ORDER BY length(rid) desc, rid desc
+                        LIMIT 4""")
     deleted = []
     for row in rows:
         try:
