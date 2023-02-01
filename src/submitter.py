@@ -51,7 +51,8 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
         "jpeg",
     ):
         try:
-            msg = waint_async(tbot.send_photo(
+            msg = waint_async(
+                tbot.send_photo(
                     chat_id=config.TG_CHANNEL,
                     parse_mode=ParseMode.HTML,
                     caption=text,
@@ -59,27 +60,29 @@ def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
                 )
             )
         except telegram.error.BadRequest:
-            msg = waint_async(tbot.send_message(
-                    chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
-                )
+            msg = waint_async(
+                tbot.send_message(chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text)
             )
     else:
-        msg = waint_async(tbot.send_message(
-                chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
-            )
+        msg = waint_async(
+            tbot.send_message(chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text)
         )
     if msg:
-        conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id))
+        conn.execute(
+            "INSERT OR REPLACE INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id)
+        )
         conn.commit()
 
 
 def clean_removed(conn: sqlite3.Connection, tbot: telegram.Bot, reddit: praw.Reddit):
     c = conn.cursor()
-    rows = c.execute("""SELECT rid, tid
+    rows = c.execute(
+        """SELECT rid, tid
                         FROM posts
                         WHERE tid IS NOT NULL
                         ORDER BY length(rid) desc, rid desc
-                        LIMIT 4""")
+                        LIMIT 4"""
+    )
     deleted = []
     for row in rows:
         try:
@@ -163,7 +166,7 @@ def main() -> None:
     sess = sess_maker()
 
     subreddits = reddit.subreddit("+".join(config.SUBREDDITS))
-    for submission in subreddits.stream.submissions(pause_after=6):
+    for submission in subreddits.stream.submissions(pause_after=6, limit=5):
         if killhandler.killed:
             logging.info("Termination signal received - exiting")
             break
@@ -179,16 +182,21 @@ def main() -> None:
         logging.info(" -- retrieved in %ss", duration)
 
         c = conn.cursor()
-        c.execute("SELECT * FROM posts WHERE rid=?", (submission.id,))
-        if c.fetchone():
-            logging.info("Already processed")
-            c.close()
-            continue
+        c.execute("SELECT tid FROM posts WHERE rid=?", (submission.id,))
+        r = c.fetchone()
+        if r:
+            if not r[0]:
+                post_telegram(conn, submission, tbot)
+                continue
+            else:
+                logging.info("Already processed")
+                c.close()
+                continue
         c.close()
         try:
             post_telegram(conn, submission, tbot)
         except Exception:
-            logging.error("Not posted on Telegram: %s", submission.id)
+            logging.exception("Not posted on Telegram: %s", submission.id)
             conn.execute("INSERT INTO posts (rid, tid) values (?, ?)", (submission.id, None))
             conn.commit()
 
