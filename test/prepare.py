@@ -13,6 +13,10 @@ def main():
         os.remove(config.DBFILE)
     except FileNotFoundError:
         pass
+    try:
+        os.remove(config.POST_DBFILE)
+    except FileNotFoundError:
+        pass
     engine = create_engine(config.DB, pool_recycle=60, pool_pre_ping=True)
     Base.metadata.create_all(engine)
 
