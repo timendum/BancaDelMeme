@@ -178,7 +178,7 @@ def main() -> None:
             continue
         submission_age = time.time() - int(submission.created_utc)
         max_age = 60 * 60 * 24  # 1 day
-        if submission > max_age:
+        if submission_age > max_age:
             continue
 
         duration = stopwatch.measure()
