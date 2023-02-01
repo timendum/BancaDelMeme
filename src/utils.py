@@ -152,9 +152,3 @@ def make_reddit() -> praw.Reddit:
         password=config.PASSWORD,
         user_agent=config.USER_AGENT,
     )
-
-
-def waint_async(main):
-    loop = asyncio.get_event_loop()
-    coroutine = main()
-    return loop.run_until_complete(coroutine)

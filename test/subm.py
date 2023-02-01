@@ -1,3 +1,4 @@
+import asyncio
 import sys
 
 sys.path.append("src")
@@ -45,7 +46,7 @@ class SubmitterTest(unittest.TestCase):
         sess.commit()
 
     def test_base(self):
-        self.submitter.main()
+        asyncio.run(self.submitter.main())
         submission = self.reddit.subreddit().stream.submissions()[0]
         replies = submission.replies
         self.assertEqual(len(replies), 1)
@@ -54,23 +55,23 @@ class SubmitterTest(unittest.TestCase):
     def test_sticky(self):
         submission = self.reddit.subreddit().stream.submissions()[0]
         submission.stickied = True
-        self.submitter.main()
+        asyncio.run(self.submitter.main())
         replies = submission.replies
         self.assertEqual(len(replies), 0)
 
     def test_double(self):
         submission = self.reddit.subreddit().stream.submissions()[0]
-        self.submitter.main()
-        self.submitter.main()
+        asyncio.run(self.submitter.main())
+        asyncio.run(self.submitter.main())
         replies = submission.replies
         self.assertEqual(len(replies), 1)
 
     def test_deleted(self):
         subreddit = self.reddit.subreddit()
         submission = subreddit.stream.submissions()[0]
-        self.submitter.main()
+        asyncio.run(self.submitter.main())
         subreddit.stream.submissions = lambda pause_after : [None]
         self.reddit.submissions[submission.id] = submission
         submission.removed = True
-        self.submitter.main()
+        asyncio.run(self.submitter.main())
         self.assertEqual(len(self.submitter.telegram.deleted), 1)

@@ -58,6 +58,7 @@ class Comment:
         self.body = body
         self.replies = []
         self.submission = submission
+        self.subreddit = Subreddit()
         self.edited = False
         self.stickied = False
         self.removed = False
@@ -110,3 +111,6 @@ class Reddit:
 class Subreddit:
     def __init__(self, *args, **kwargs):
         self.stream = MagicMock(submissions=MagicMock(return_value=[Submission("id")]))
+    
+    def rules(self):
+        return {"rules": [{"violation_reason": "test"} for _ in range(6)]}
