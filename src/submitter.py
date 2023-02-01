@@ -167,7 +167,7 @@ def main() -> None:
     sess = sess_maker()
 
     subreddits = reddit.subreddit("+".join(config.SUBREDDITS))
-    for submission in subreddits.stream.submissions(pause_after=6, limit=5):
+    for submission in subreddits.stream.submissions(pause_after=6):
         if killhandler.killed:
             logging.info("Termination signal received - exiting")
             break
