@@ -54,16 +54,20 @@ async def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot
     ):
         try:
             msg = await tbot.send_photo(
-                    chat_id=config.TG_CHANNEL,
-                    parse_mode=ParseMode.HTML,
-                    caption=text,
-                    photo=submission.url,
-                )
+                chat_id=config.TG_CHANNEL,
+                parse_mode=ParseMode.HTML,
+                caption=text,
+                photo=submission.url,
+            )
         except telegram.error.BadRequest:
-            msg = await tbot.send_message(chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text)
+            msg = await tbot.send_message(
+                chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
+            )
     else:
-        msg = await tbot.send_message(chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text)
-        
+        msg = await tbot.send_message(
+            chat_id=config.TG_CHANNEL, parse_mode=ParseMode.HTML, text=text
+        )
+
     if msg:
         conn.execute(
             "INSERT OR REPLACE INTO posts (rid, tid) values (?, ?)", (submission.id, msg.message_id)
@@ -222,4 +226,3 @@ if __name__ == "__main__":
         except Exception:
             logging.exception("Exception, sleeping and retrying")
             time.sleep(60)
-    

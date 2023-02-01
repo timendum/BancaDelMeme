@@ -5,11 +5,9 @@ logging is the general stdout for us
 
 prawcore has the list of praw exceptions
 """
-import asyncio
 import traceback
 import logging
 import time
-from typing import Callable, TypeVar
 
 import praw
 import prawcore
@@ -151,4 +149,5 @@ def make_reddit() -> praw.Reddit:
         username=config.USERNAME,
         password=config.PASSWORD,
         user_agent=config.USER_AGENT,
+        check_for_async=False
     )
