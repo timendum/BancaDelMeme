@@ -19,6 +19,7 @@ import html
 import logging
 import sqlite3
 import urllib.parse
+import time
 
 import praw
 import telegram
@@ -174,6 +175,10 @@ def main() -> None:
             clean_removed(conn, tbot, reddit)
             # because of pause_after
             # to handle ctr+c above
+            continue
+        submission_age = time.time() - int(submission.created_utc)
+        max_age = 60 * 60 * 24  # 1 day
+        if submission > max_age:
             continue
 
         duration = stopwatch.measure()
