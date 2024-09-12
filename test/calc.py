@@ -84,7 +84,7 @@ class CalculatorTest(unittest.TestCase):
     def test_base(self):
         try:
             investor0, _, _ = self.create_investment(100, 1, 1000, "0")
-            investor1, _, _ = self.create_investment(100, 100, 100, "1")
+            investor1, _, _ = self.create_investment(10000, 50, 100, "1")
             self.create_investment(100, 100, 169, "2")
             self.create_investment(100, -1, 100, "3")
             self.create_investment(100, 100, -1, "4")
@@ -94,7 +94,7 @@ class CalculatorTest(unittest.TestCase):
             pass
         sess = self.Session()
         self.check_balance(sess, investor0, lambda balance: balance > 100)
-        self.check_balance(sess, investor1, lambda balance: balance < 100)
+        self.check_balance(sess, investor1, lambda balance: balance < 10000)
 
     def test_op(self):
         """Test profit greater for OP, same prameters"""
@@ -131,3 +131,16 @@ class CalculatorTest(unittest.TestCase):
         profit1 = sess.query(Investment).filter(Investment.id == investment1.id).one().profit
         self.assertEqual(profit0, profit1)
         sess.close()
+
+    def test_autobroke(self):
+        """Test auto broke after big loss"""
+        try:
+            investor0, _, _ = self.create_investment(100, 100, 100, "0")
+            self.calculator.main()
+        except DoneException:
+            pass
+        sess = self.Session()
+        sess.expire_all()
+        self.check_balance(sess, investor0, lambda balance: balance == 900)
+        sess.close()
+

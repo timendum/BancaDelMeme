@@ -107,10 +107,16 @@ class EmptyResponse:
 
     def __init__(self):
         self.body = "[fake response body]"
+        self.parent = self
 
     def edit_wrap(self, body):
         """Log to console"""
         logging.info(" -- editing fake response")
+        logging.info(body)
+    
+    def reply_wrap(self, body):
+        """Log to console"""
+        logging.info(" -- posting fake response")
         logging.info(body)
 
 

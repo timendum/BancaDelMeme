@@ -93,11 +93,11 @@ Se hai meno di 100 Mem€ e nessun investimento in corso, prova ad inviare `!ban
 """
 
 
-def modify_broke(times) -> str:
+def modify_broke(times, new_balance) -> str:
     return f"""
 OOps, sei in bancarotta.
 
-Il tuo saldo è stato resettato a 100 Mem€. Sta attento la prossima volta.
+Il tuo saldo è stato resettato a {new_balance} Mem€. Sta attento la prossima volta.
 
 Sei andato in bancarotta {times} volte.
 """

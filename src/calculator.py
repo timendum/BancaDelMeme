@@ -174,6 +174,21 @@ def main():
         investment.profit = profit
         investment.done = True
         investment.balance = investor.balance
+        
+        if investor.balance < config.STARTING_BALANCE * 0.5:
+            active = (
+                sess.query(func.count(Investment.id))
+                .filter(Investment.done == 0)
+                .filter(Investment.name == investor.name)
+                .scalar()
+            )
+
+            if active < 1:
+                # Indeed, broke
+                investor.balance = int(config.STARTING_BALANCE * 0.9)
+                investor.broke += 1
+
+                response.parent.reply_wrap(message.modify_broke(investor.broke, investor.balance))
 
         sess.commit()
 

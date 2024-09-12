@@ -318,9 +318,9 @@ class CommentWorker:
     @req_user
     def bancarotta(self, sess, comment, investor):
         """
-        Checks if the user is broke. If he is, resets his/her balance to 100 MemeCoins
+        Checks if the user is broke. If he is, resets his/her balance 0.9 of starting
         """
-        if investor.balance >= 100:
+        if investor.balance >= config.STARTING_BALANCE * 0.5:
             return comment.reply_wrap(message.modify_broke_money(investor.balance))
 
         active = (
@@ -334,10 +334,10 @@ class CommentWorker:
             return comment.reply_wrap(message.modify_broke_active(active))
 
         # Indeed, broke
-        investor.balance = 100
+        investor.balance = int(config.STARTING_BALANCE * 0.9)
         investor.broke += 1
 
-        return comment.reply_wrap(message.modify_broke(investor.broke))
+        return comment.reply_wrap(message.modify_broke(investor.broke, config.STARTING_BALANCE))
 
     @req_user
     def attivi(self, sess, comment, investor):

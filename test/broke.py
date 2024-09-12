@@ -22,9 +22,9 @@ class TestBroke(Test):
         self.set_balance(0)
         replies = self.command("!bancarotta")
         self.assertEqual(len(replies), 1)
-        self.assertEqual(replies[0].body, message.modify_broke(1))
+        self.assertEqual(replies[0].body, message.modify_broke(1, 1000))
 
         self.set_balance(0)
         replies = self.command("!bancarotta")
         self.assertEqual(len(replies), 1)
-        self.assertEqual(replies[0].body, message.modify_broke(2))
+        self.assertEqual(replies[0].body, message.modify_broke(2, 1000))
