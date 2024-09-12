@@ -40,7 +40,7 @@ def calculate(new, old, net_worth=0, top_networth=0):
 
     factor = adjust(factor, net_worth, top_networth)
 
-    factor = max(0, factor)
+    factor = max(0.5, factor)
     return factor
 
 
@@ -59,7 +59,7 @@ def sigmoid_max(old):
     return MAX_A + MAX_B / ((old / MAX_C) + 1)
 
 
-MID_A = 180
+MID_A = 100
 MID_B = 10000
 MID_M = 20000
 
@@ -99,15 +99,15 @@ def adjust(factor, net_worth=0, top_networth=0) -> float:
 
 
 def net_worth_coefficient(net_worth, top_networth=0) -> float:
-    # questa funzione restituisce un moltimplicatore che amplifica (o riduce)
+    # questa funzione restituisce un moltiplicatore che amplifica (o riduce)
     # il ritorno di un investimento in base alla rapporto tra net_worth e top_networth
     # più l'investitore è povero, più il ritorno sarà amplificato (valore >1)
-    # più il patrimonio dell'investitore è sopra lo 0.7 del top_networth,
+    # più il patrimonio dell'investitore è sopra lo 0.55 del top_networth,
     #     più il ritorno sarà diminuito
     factor = 0.155
     if top_networth:
         # normalizzo il rapporto tra patrimonio e massimo in 100esimi
         net_worth = max(1, net_worth * 100 / top_networth)
-        # il fattore è pre-calcolato rispetto ad un massimo di 100
-        factor = 0.43246468858824433  # math.log(6, 90 * 0.7)
+        # il fattore è pre-calcolato rispetto ad un massimo di 90
+        factor = 0.4591932391528963 # math.log(6, 90 * 0.55)
     return (net_worth**-factor) * 6

@@ -34,9 +34,9 @@ def find_threshold(fixed_b, min_a, max_a, target):
 
 
 def main():
-    startings = [1, 10, 20, 50]
+    startings = [1, 5, 10, 20, 50]
     limit = 900
-    deltas = [5, 10, 20]
+    deltas = [2, 5, 10, 20]
     threshs = [1, 1.25, 1.5, 2, 2.4]
     print("Inizio | Fine | Totale | Rendimento")
     print("---|---|----|----")
