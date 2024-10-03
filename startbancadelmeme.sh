@@ -15,14 +15,14 @@ trap "screen -S memeteleg -X quit" INT QUIT
 /bin/sleep 1
 screen -d -m -S mememain /bin/bash
 screen -S mememain -X stuff "cd ./src/^M"
-screen -S mememain -X stuff "../bin/python3 main.py^M"
+screen -S mememain -X stuff "../venv/bin/python3 main.py^M"
 
 /bin/sleep 1
 screen -d -m -S memesub /bin/bash
 screen -S memesub -X stuff "cd ./src/^M"
-screen -S memesub -X stuff "../bin/python3 submitter.py^M"
+screen -S memesub -X stuff "../venv/bin/python3 submitter.py^M"
 
 /bin/sleep 1
 screen -d -m -S memecalc /bin/bash
 screen -S memecalc -X stuff "cd ./src/^M"
-screen -S memecalc -X stuff "../bin/python3 calculator.py^M"
+screen -S memecalc -X stuff "../venv/bin/python3 calculator.py^M"
