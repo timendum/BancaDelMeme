@@ -1,8 +1,7 @@
 from sqlalchemy import create_engine
-from sqlalchemy.schema import CreateTable
 
-import models
 import config
+import models
 
 
 def main():

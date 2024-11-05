@@ -1,7 +1,7 @@
-from test import Test
-import message
 import help_info
+import message
 import utils
+from test import Test
 
 
 class TestBasic(Test):

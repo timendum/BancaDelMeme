@@ -1,7 +1,7 @@
 # Interactive command line tool for performing test calculations for investment return
 import math
 
-from formula import calculate, adjust
+from formula import adjust, calculate
 
 
 def find_threshold(fixed_b, min_a, max_a, target):
@@ -50,7 +50,7 @@ def main():
         for ending in endings:
             ret = calculate(ending, starting)
             rets.add(ret)
-            print("{:d} | {:d} | {:.2f} | {:+.2f}".format(starting, ending, ret, ret - 1))
+            print(f"{starting:d} | {ending:d} | {ret:.2f} | {ret - 1:+.2f}")
     pnet_worths = [0.1, 0.2, 0.5, 0.8, 1]
     top_networths = [1000, 5000, 100000, 100000000, 100000000000]
     rets = [0.1, 0.5, 1.0, 1.2, 1.5, 2, 2.5]
@@ -61,7 +61,7 @@ def main():
         top_networth = 1000000
         net_worth = int(pnet_worth * top_networth)
         nret = adjust(ret, net_worth, top_networth)
-        print("{:,d} | {:,d} | {:+.2f}%".format(net_worth, top_networth, (nret - ret) / ret * 100))
+        print(f"{net_worth:,d} | {top_networth:,d} | {(nret - ret) / ret * 100:+.2f}%")
     print("\nRend. Orig. | Patrimonio | Top | Totale | Rendimento | Delta")
     print("---|---|---|---|----|----")
     for ret in rets:
@@ -70,9 +70,7 @@ def main():
                 net_worth = int(pnet_worth * top_networth)
                 nret = adjust(ret, net_worth, top_networth)
                 print(
-                    "{:.2f} | {:,d} | {:,d} | {:.2f} | {:+.2f} | {:+.2f}".format(
-                        ret, net_worth, top_networth, nret, nret - 1, (nret - ret) / ret * 100
-                    )
+                    f"{ret:.2f} | {net_worth:,d} | {top_networth:,d} | {nret:.2f} | {nret - 1:+.2f} | {(nret - ret) / ret * 100:+.2f}"
                 )
 
 

@@ -5,9 +5,9 @@ logging is the general stdout for us
 
 prawcore has the list of praw exceptions
 """
-import traceback
 import logging
 import time
+import traceback
 
 import praw
 import prawcore
@@ -95,11 +95,11 @@ def formatNumber(n) -> str:
     suffixes = {6: "M", 9: "B", 12: "T", 15: "Q", 18: "E"}
     digits = len(str(n))
     if digits <= 6:
-        return "{:,}".format(n)
+        return f"{n:,}"
     exponent = (digits - 1) - ((digits - 1) % 3)
     mantissa = n / (10**exponent)
     suffix = suffixes.get(exponent)
-    return "{:.2f}{}".format(mantissa, suffix)
+    return f"{mantissa:.2f}{suffix}"
 
 
 class EmptyResponse:
@@ -113,7 +113,7 @@ class EmptyResponse:
         """Log to console"""
         logging.info(" -- editing fake response")
         logging.info(body)
-    
+
     def reply_wrap(self, body):
         """Log to console"""
         logging.info(" -- posting fake response")

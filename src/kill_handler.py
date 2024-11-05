@@ -3,6 +3,7 @@ signal library allows us to send UNIX signals
 """
 import signal
 
+
 # Handles SIGTERM (15)
 class KillHandler:
     """

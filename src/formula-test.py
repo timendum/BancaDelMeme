@@ -1,5 +1,6 @@
 # Interactive command line tool for performing test calculations for investment return
 import argparse
+
 from formula import calculate
 
 try:

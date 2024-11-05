@@ -2,16 +2,15 @@ import sys
 
 sys.path.append("src")
 
-import os
 import unittest
 
+from mock_praw import Comment, Submission
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 import config
 from comment_worker import CommentWorker
-from models import Base, Investor, Investment
-from mock_praw import Comment, Submission
+from models import Base, Investment, Investor
 
 
 class Test(unittest.TestCase):

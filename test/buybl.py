@@ -4,16 +4,16 @@ sys.path.append("src")
 
 import time
 import unittest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock
 
+from mock_praw import Comment, Reddit, Submission
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 import buyabler
 import config
-from models import Investor, Investment, Buyable
-from mock_praw import Comment, Submission, Reddit
+from models import Buyable, Investment, Investor
 
 
 class BuyableTest(unittest.TestCase):

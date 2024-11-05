@@ -2,17 +2,18 @@ import sys
 
 sys.path.append("src")
 
-import unittest
 import time
+import unittest
+from unittest.mock import Mock
 
+from mock_praw import Comment, Reddit, Submission
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 import calculator
 import config
-from models import Investor, Investment
-from mock_praw import Comment, Submission, Reddit, Redditor
-from unittest.mock import Mock
+from models import Investment, Investor
+
 
 class DoneException(BaseException):
     pass

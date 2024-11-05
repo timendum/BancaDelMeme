@@ -2,10 +2,9 @@
 sqlalchemy is the way we connect to our MySQL database
 """
 from sqlalchemy import BigInteger, Boolean, Column, Index, Integer, String, func
-from sqlalchemy.ext.declarative import declarative_base
-
-from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import expression
 
 import config
 
@@ -56,7 +55,7 @@ class Investment(Base):
     def __str__(self):
         return (
             "Investment("
-            + ", ".join(["{}={!r}".format(k, v) for k, v in self.__dict__.items()])
+            + ", ".join([f"{k}={v!r}" for k, v in self.__dict__.items()])
             + ")"
         )
 
@@ -87,7 +86,7 @@ class Investor(Base):
     def __str__(self):
         return (
             "Investor("
-            + ", ".join(["{}={!r}".format(k, v) for k, v in self.__dict__.items()])
+            + ", ".join([f"{k}={v!r}" for k, v in self.__dict__.items()])
             + ")"
         )
 
@@ -108,5 +107,5 @@ class Buyable(Base):
 
     def __str__(self):
         return (
-            "Buyable(" + ", ".join(["{}={!r}".format(k, v) for k, v in self.__dict__.items()]) + ")"
+            "Buyable(" + ", ".join([f"{k}={v!r}" for k, v in self.__dict__.items()]) + ")"
         )

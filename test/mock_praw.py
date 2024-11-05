@@ -1,4 +1,3 @@
-from operator import attrgetter
 import time
 from unittest.mock import MagicMock
 
@@ -12,9 +11,9 @@ class Redditor:
 
 
 class Submission:
-    def __init__(self, submission_id, author=Redditor("submitter"), ups=100):
+    def __init__(self, submission_id, author, ups=100):
         self.id = submission_id
-        self.author = author
+        self.author = author or Redditor("submitter")
         self.ups = ups
         self.replies = []
         self.stickied = False
@@ -87,7 +86,7 @@ class Comment:
 
     def __str__(self):
         return (
-            "Comment(" + ", ".join(["{}={!r}".format(k, v) for k, v in self.__dict__.items()]) + ")"
+            "Comment(" + ", ".join([f"{k}={v!r}" for k, v in self.__dict__.items()]) + ")"
         )
 
 
@@ -111,6 +110,6 @@ class Reddit:
 class Subreddit:
     def __init__(self, *args, **kwargs):
         self.stream = MagicMock(submissions=MagicMock(return_value=[Submission("id")]))
-    
+
     def rules(self):
         return {"rules": [{"violation_reason": "test"} for _ in range(6)]}

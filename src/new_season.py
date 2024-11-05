@@ -3,11 +3,9 @@ import logging
 
 from sqlalchemy.orm import sessionmaker
 
-
-import config
-from utils import create_engine
-from models import Investment, Investor, Buyable
+from models import Buyable, Investment, Investor
 from stopwatch import Stopwatch
+from utils import create_engine
 
 logging.basicConfig(level=logging.INFO)
 

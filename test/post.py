@@ -1,6 +1,7 @@
-from test import Test
 from mock_praw import Comment, Submission
+
 import message
+from test import Test
 
 
 class TestPost(Test):

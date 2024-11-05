@@ -1,8 +1,6 @@
-import math
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
 
 import formula
 
@@ -20,7 +18,7 @@ def main():
     ax = plt.subplot2grid((6, 2), (0, 0), rowspan=3, colspan=1)
 
     olds = [0, 1, 5, 10, 25, 50, 100]
-    news = range(0, 200)
+    news = range(200)
 
     xy = []
     for o in olds:
@@ -50,7 +48,7 @@ def main():
     ax = plt.subplot2grid((6, 2), (3, 0), rowspan=3, colspan=1)
 
     olds = [0, 1, 2, 5, 10, 15, 20]
-    news = range(0, 100)
+    news = range(100)
 
     xy = []
     for o in olds:
@@ -79,7 +77,7 @@ def main():
     # Upper right subplot
     ax = plt.subplot2grid((6, 2), (0, 1), rowspan=1, colspan=1)
 
-    olds = range(0, 100)
+    olds = range(100)
 
     x = []
     y = []
@@ -101,7 +99,7 @@ def main():
     # Upper right subplot
     ax = plt.subplot2grid((6, 2), (1, 1), rowspan=1, colspan=1)
 
-    olds = range(0, 100)
+    olds = range(100)
 
     x = []
     y = []
@@ -122,7 +120,7 @@ def main():
     # Upper right subplot
     ax = plt.subplot2grid((6, 2), (2, 1), rowspan=1, colspan=1)
 
-    olds = range(0, 100)
+    olds = range(100)
 
     x = []
     y = []

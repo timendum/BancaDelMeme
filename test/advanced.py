@@ -1,6 +1,6 @@
-from test import Test
 import config
 import message
+from test import Test
 
 
 class TestAdvanced(Test):

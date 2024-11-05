@@ -1,5 +1,4 @@
 import logging
-import math
 import os
 import re
 import time
@@ -179,7 +178,6 @@ class CommentWorker:
         """
         Just ignore function
         """
-        pass
 
     def aiuto(self, sess, comment, command_name=None):
         """

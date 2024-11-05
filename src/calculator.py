@@ -15,7 +15,6 @@ from kill_handler import KillHandler
 from models import Investment, Investor
 from stopwatch import Stopwatch
 from utils import BALANCE_CAP, EmptyResponse, create_engine, edit_wrap
-import comment_worker as _ # to enable reply_wrap
 
 logging.basicConfig(level=logging.INFO)
 
@@ -169,14 +168,14 @@ def main():
                 )
                 try:
                     post.subreddit.message(*message.notify_capped(investor, investment, response))
-                except:
+                except BaseException:
                     logging.error("Modmail fallita!")
 
             investment.success = profit > 0
             investment.profit = profit
             investment.done = True
             investment.balance = investor.balance
-            
+
             if investor.balance < config.STARTING_BALANCE * 0.5:
                 active = (
                     sess.query(func.count(Investment.id))

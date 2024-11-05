@@ -19,13 +19,13 @@ import asyncio
 import html
 import logging
 import sqlite3
-import urllib.parse
 import time
+import urllib.parse
 
 import praw
 import telegram
-from telegram.constants import ParseMode
 from sqlalchemy.orm import scoped_session, sessionmaker
+from telegram.constants import ParseMode
 
 import config
 import message
@@ -33,18 +33,18 @@ from comment_worker import reply_wrap
 from kill_handler import KillHandler
 from models import Buyable
 from stopwatch import Stopwatch
-from utils import create_engine, keep_up, make_reddit, test_reddit_connection
+from utils import create_engine, make_reddit, test_reddit_connection
 
 praw.models.Submission.reply_wrap = reply_wrap
 logging.basicConfig(level=logging.INFO)
 
 
 async def post_telegram(conn: sqlite3.Connection, submission, tbot: telegram.Bot):
-    link = "https://reddit.com{id}".format(id=urllib.parse.quote(submission.permalink))
+    link = f"https://reddit.com{urllib.parse.quote(submission.permalink)}"
     title = html.escape(submission.title or "")
     if len(title) <= 3:
         title = "Titolo: " + title
-    text = "<a href='{}'>{}</a>".format(link, title)
+    text = f"<a href='{link}'>{title}</a>"
     logging.info(" -- Posting %s", link)
     msg = None
     if submission.domain == "i.redd.it" or submission.url.split(".")[-1] in (

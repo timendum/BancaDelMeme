@@ -2,15 +2,12 @@
 import logging
 import time
 
-import praw
-from sqlalchemy import and_, create_engine, desc, func
+from sqlalchemy import create_engine, desc, func
 from sqlalchemy.orm import sessionmaker
 
 import config
-import utils
 import leaderboard
-from models import Investment, Investor, Buyable
-from utils import formatNumber
+from models import Buyable, Investment, Investor
 
 logging.basicConfig(level=logging.INFO)
 localtime = time.strftime("{%Y-%m-%d %H:%M:%S}")
@@ -62,7 +59,7 @@ def main():
     ).fetchall()
     logging.info("top_poster fetched")
 
-    with open("stagione.txt", "wt") as oo:
+    with open("stagione.txt", "w") as oo:
         oo.write("# Stagione XXX\n\nClassifica definitiva della xxx stagione.\n\n")
         oo.write(leaderboard.format_investor(top_users, 10000))
         oo.write("\n\n\n# Migliori autori di OC\n\n\n")

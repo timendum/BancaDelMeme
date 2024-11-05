@@ -1,5 +1,5 @@
-from test import Test
 import message
+from test import Test
 
 
 class TestBalance(Test):

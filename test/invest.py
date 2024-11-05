@@ -1,5 +1,5 @@
-from test import Test
 import message
+from test import Test
 
 
 class TestInvest(Test):
@@ -48,7 +48,7 @@ class TestInvest(Test):
         self.assertEqual(len(replies), 1)
         self.assertEqual(replies[0].body, message.modify_invest(1000, 100, 0))
 
-    def test_invest_100_percent(self):
+    def test_invest_1k_percent(self):
         self.command("!create")
 
         replies = self.command("!investi 1k")

@@ -7,7 +7,7 @@ import os
 config_path = os.path.join("..", "cfg.json")
 config_path = os.environ.get("CONFIG", config_path)
 
-with open(config_path, "r", encoding="utf-8") as config_file:
+with open(config_path, encoding="utf-8") as config_file:
     config_data = json.load(config_file)
 
 POST_TO_REDDIT = int(config_data["BOT_POST_TO_REDDIT"])
@@ -43,4 +43,4 @@ TG_CHANNEL = config_data["TG_CHANNEL"]
 
 POST_DBFILE = config_data["POST_DBFILE"]
 
-DB = "sqlite:///{db}".format(db=DBFILE)
+DB = f"sqlite:///{DBFILE}"
