@@ -67,96 +67,80 @@ def main():
     while not killhandler.killed:
         sess = session_maker()
 
-        then = int(time.time()) - config.INVESTMENT_DURATION
-        investment = (
-            sess.query(Investment)
-            .filter(Investment.done == 0)
-            .filter(Investment.time < then)
-            .order_by(Investment.time.asc())
-            .first()
-        )
-
-        if not investment:
-            # Nothing matured yet; wait a bit before trying again
-            time.sleep(50)
-            continue
-
-        duration = stopwatch.measure()
-
-        investor = sess.query(Investor).filter(Investor.name == investment.name).one()
-        net_worth = investor.networth(sess)
-
-        logging.info("New mature investment: %s", investment.comment)
-        logging.info(" -- by %s", investor.name)
-
-        # Retrieve the post the user invested in (lazily, no API call)
-        post = reddit.submission(investment.post)
-
-        # Retrieve the post's current upvote count (triggers an API call)
-        upvotes_now = post.ups
-        investment.final_upvotes = upvotes_now
-        investment.op = post.author and investor.name == post.author.name
-        investment.net_worth = net_worth
-        investment.top_networth = top_networth
-
-        # Updating the investor's balance
-        factor = formula.calculate(upvotes_now, investment.upvotes, net_worth, top_networth)
-
-        if factor > 1 and post.author and investor.name == post.author.name:
-            # bonus to OP
-            factor *= formula.OP_BONUS
-
-        if factor < 1 and post.removed_by_category == "moderator":
-            # for removed posts
-            factor = 1
-
-        amount = investment.amount
-        balance = investor.balance
-
-        new_balance = int(balance + (amount * factor))
-        change = new_balance - balance
-        profit = change - amount
-
-        # Updating the investor's variables
-        investor.completed += 1
-
-        # Retrieve the bot's original response (lazily, no API call)
-        if investment.response != "0":
-            response = reddit.comment(id=investment.response)
-        else:
-            response = EmptyResponse()
-
-        if new_balance < BALANCE_CAP:
-            # If investor is in a firm and he profits,
-            # 15% goes to the firm
-            investor.balance = new_balance
-
-            # Edit the bot's response (triggers an API call)
-            if profit > 0:
-                logging.info(" -- profited %s", profit)
-            elif profit == 0:
-                logging.info(" -- broke even")
-            else:
-                logging.info(" -- lost %s", profit)
-
-            edited_response = message.modify_invest_return(
-                investment.amount,
-                investment.upvotes,
-                upvotes_now,
-                change,
-                profit,
-                investor.balance,
+        try:
+            then = int(time.time()) - config.INVESTMENT_DURATION
+            investment = (
+                sess.query(Investment)
+                .filter(Investment.done == 0)
+                .filter(Investment.time < then)
+                .order_by(Investment.time.asc())
+                .first()
             )
 
-            response.edit_wrap(edited_response)
-        else:
-            # This investment pushed the investor's balance over the cap
-            investor.balance = BALANCE_CAP
+            if not investment:
+                # Nothing matured yet; wait a bit before trying again
+                time.sleep(50)
+                continue
 
-            # Edit the bot's response (triggers an API call)
-            logging.info(" -- profited %s but got capped", profit)
-            response.edit_wrap(
-                message.modify_invest_capped(
+            duration = stopwatch.measure()
+
+            investor = sess.query(Investor).filter(Investor.name == investment.name).one()
+            net_worth = investor.networth(sess)
+
+            logging.info("New mature investment: %s", investment.comment)
+            logging.info(" -- by %s", investor.name)
+
+            # Retrieve the post the user invested in (lazily, no API call)
+            post = reddit.submission(investment.post)
+
+            # Retrieve the post's current upvote count (triggers an API call)
+            upvotes_now = post.ups
+            investment.final_upvotes = upvotes_now
+            investment.op = post.author and investor.name == post.author.name
+            investment.net_worth = net_worth
+            investment.top_networth = top_networth
+
+            # Updating the investor's balance
+            factor = formula.calculate(upvotes_now, investment.upvotes, net_worth, top_networth)
+
+            if factor > 1 and post.author and investor.name == post.author.name:
+                # bonus to OP
+                factor *= formula.OP_BONUS
+
+            if factor < 1 and post.removed_by_category == "moderator":
+                # for removed posts
+                factor = 1
+
+            amount = investment.amount
+            balance = investor.balance
+
+            new_balance = int(balance + (amount * factor))
+            change = new_balance - balance
+            profit = change - amount
+
+            # Updating the investor's variables
+            investor.completed += 1
+
+            # Retrieve the bot's original response (lazily, no API call)
+            if investment.response != "0":
+                response = reddit.comment(id=investment.response)
+            else:
+                response = EmptyResponse()
+
+            if new_balance < BALANCE_CAP:
+                # If investor is in a firm and he profits,
+                # 15% goes to the firm
+                investor.balance = new_balance
+
+                # Edit the bot's response (triggers an API call)
+                if profit > 0:
+                    logging.info(" -- profited %s", profit)
+                elif profit == 0:
+                    logging.info(" -- broke even")
+                else:
+                    logging.info(" -- lost %s", profit)
+
+                edited_response = message.modify_invest_return(
                     investment.amount,
                     investment.upvotes,
                     upvotes_now,
@@ -164,48 +148,65 @@ def main():
                     profit,
                     investor.balance,
                 )
-            )
-            try:
-                post.subreddit.message(*message.notify_capped(investor, investment, response))
-            except:
-                logging.error("Modmail fallita!")
 
-        investment.success = profit > 0
-        investment.profit = profit
-        investment.done = True
-        investment.balance = investor.balance
-        
-        if investor.balance < config.STARTING_BALANCE * 0.5:
-            active = (
-                sess.query(func.count(Investment.id))
-                .filter(Investment.done == 0)
-                .filter(Investment.name == investor.name)
-                .scalar()
-            )
+                response.edit_wrap(edited_response)
+            else:
+                # This investment pushed the investor's balance over the cap
+                investor.balance = BALANCE_CAP
 
-            if active < 1:
-                # Indeed, broke
-                investor.balance = int(config.STARTING_BALANCE * 0.9)
-                investor.broke += 1
+                # Edit the bot's response (triggers an API call)
+                logging.info(" -- profited %s but got capped", profit)
+                response.edit_wrap(
+                    message.modify_invest_capped(
+                        investment.amount,
+                        investment.upvotes,
+                        upvotes_now,
+                        change,
+                        profit,
+                        investor.balance,
+                    )
+                )
+                try:
+                    post.subreddit.message(*message.notify_capped(investor, investment, response))
+                except:
+                    logging.error("Modmail fallita!")
 
-                response.parent.reply_wrap(message.modify_broke(investor.broke, investor.balance))
+            investment.success = profit > 0
+            investment.profit = profit
+            investment.done = True
+            investment.balance = investor.balance
+            
+            if investor.balance < config.STARTING_BALANCE * 0.5:
+                active = (
+                    sess.query(func.count(Investment.id))
+                    .filter(Investment.done == 0)
+                    .filter(Investment.name == investor.name)
+                    .scalar()
+                )
 
-        sess.commit()
+                if active < 1:
+                    # Indeed, broke
+                    investor.balance = int(config.STARTING_BALANCE * 0.9)
+                    investor.broke += 1
 
-        if top_networth < investor.balance:
-            top_networth = investor.balance
-            logging.info("New Top networth: %d", top_networth)
+                    response.parent().reply_wrap(message.modify_broke(investor.broke, investor.balance))
 
-        # Measure how long processing took
-        duration = stopwatch.measure()
-        logging.info(" -- processed in %.2fs", duration)
+            sess.commit()
 
-        # Report the Reddit API call stats
-        rem = int(reddit.auth.limits["remaining"])
-        res = int(reddit.auth.limits["reset_timestamp"] - time.time())
-        logging.info(" -- API calls remaining: %s, resetting in %.2fs", rem, res)
+            if top_networth < investor.balance:
+                top_networth = investor.balance
+                logging.info("New Top networth: %d", top_networth)
 
-        sess.close()
+            # Measure how long processing took
+            duration = stopwatch.measure()
+            logging.info(" -- processed in %.2fs", duration)
+
+            # Report the Reddit API call stats
+            rem = int(reddit.auth.limits["remaining"])
+            res = int(reddit.auth.limits["reset_timestamp"] - time.time())
+            logging.info(" -- API calls remaining: %s, resetting in %.2fs", rem, res)
+        finally:
+            sess.close()
 
 
 if __name__ == "__main__":

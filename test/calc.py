@@ -66,7 +66,7 @@ class CalculatorTest(unittest.TestCase):
             comment=comment.id,
             name=comment.author.name,
             amount=amount,
-            response="0",
+            response="1",
             done=False,
         )
         investment.time = int(time.time()) - config.INVESTMENT_DURATION - 1
