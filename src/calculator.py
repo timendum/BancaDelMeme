@@ -15,6 +15,7 @@ from kill_handler import KillHandler
 from models import Investment, Investor
 from stopwatch import Stopwatch
 from utils import BALANCE_CAP, EmptyResponse, create_engine, edit_wrap
+import comment_worker as _ # to enable reply_wrap
 
 logging.basicConfig(level=logging.INFO)
 

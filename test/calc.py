@@ -13,7 +13,6 @@ import config
 from models import Investor, Investment
 from mock_praw import Comment, Submission, Reddit, Redditor
 from unittest.mock import Mock
-import comment_worker as _ # to enable reply_wrap
 
 class DoneException(BaseException):
     pass
