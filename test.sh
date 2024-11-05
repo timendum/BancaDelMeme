@@ -1,25 +1,25 @@
 #!/bin/bash
 
-TEST_ENV=.testenv
+VIRTUAL_ENV=.testenv
 
-if [ ! -d $TEST_ENV ]; then
+if [ ! -d $VIRTUAL_ENV ]; then
   # set up virtual environment
-  virtualenv $TEST_ENV
-  if [ -f $TEST_ENV/bin/activate ]; then
-    source $TEST_ENV/bin/activate
+  uv venv $VIRTUAL_ENV
+  if [ -f $VIRTUAL_ENV/bin/activate ]; then
+    source $VIRTUAL_ENV/bin/activate
   else
-    source $TEST_ENV/Scripts/activate
+    source $VIRTUAL_ENV/Scripts/activate
   fi
 
   # install deps
-  pip install -r requirements.txt
-  pip install coverage
+  uv pip install -r requirements.txt
+  uv pip install coverage
 else
   # just activate virtual environment
-  if [ -f $TEST_ENV/bin/activate ]; then
-    source $TEST_ENV/bin/activate
+  if [ -f $VIRTUAL_ENV/bin/activate ]; then
+    source $VIRTUAL_ENV/bin/activate
   else
-    source $TEST_ENV/Scripts/activate
+    source $VIRTUAL_ENV/Scripts/activate
   fi
 fi
 
@@ -27,7 +27,7 @@ fi
 export CONFIG=cfg_test.json
 
 # run tests
-python test/prepare.py
-coverage run --branch --source=src -m unittest discover --start=test --pattern=*.py && \
-  coverage report && \
-  coverage html
+uv run test/prepare.py
+uv run python -m coverage run --branch --source=src -m unittest discover --start=test --pattern=*.py && \
+  uv run python -m coverage report && \
+  uv run python -m coverage html
